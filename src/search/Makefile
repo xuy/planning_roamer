@@ -336,7 +336,8 @@ PROFILE: $(TARGET_PROFILE)
 clean:
 	rm -rf .obj
 	rm -f *~ *.pyc
-	rm -f Makefile.depend gmon.out PROFILE core
+	#rm -f Makefile.depend gmon.out PROFILE core
+	rm -f gmon.out PROFILE core
 	rm -f sas_plan
 
 distclean: clean
