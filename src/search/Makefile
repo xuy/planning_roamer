@@ -8,7 +8,7 @@ LINK_RELEASE_STATICALLY=1
 
 ## Set STATE_VAR_BYTES to 1, 2 or 4 to control how large a state
 ## variable is. There should be no need to tweak this manually.
-STATE_VAR_BYTES=1
+STATE_VAR_BYTES=2
 
 ## On a supported operating system, there should be no need to override
 ## the OS setting. If the provided code does not work even though your
@@ -172,6 +172,7 @@ DEPEND = g++ -MM
 CCOPT = -Iext
 CCOPT += -g
 CCOPT += -m32
+CCOPT += -lrt
 CCOPT += -Wall -W -Wno-sign-compare -Wno-deprecated -ansi -pedantic -Werror -DSTATE_VAR_BYTES=$(STATE_VAR_BYTES)
 
 ## The following lines contain workarounds for bugs when
@@ -206,7 +207,7 @@ POSTLINKOPT =
 ##        For details, see man gcc on -static-libgcc.
 
 CCOPT_RELEASE  = -O3 -DNDEBUG -fomit-frame-pointer
-CCOPT_DEBUG    = -O3
+CCOPT_DEBUG    = -O0
 CCOPT_PROFILE  = -O3 -pg
 
 LINKOPT_RELEASE =
@@ -214,7 +215,7 @@ LINKOPT_DEBUG    =
 LINKOPT_PROFILE  = -pg
 
 POSTLINKOPT_RELEASE =
-POSTLINKOPT_DEBUG   =
+POSTLINKOPT_DEBUG   = -lrt
 POSTLINKOPT_PROFILE =
 
 ifeq ($(LINK_RELEASE_STATICALLY), 1)
@@ -346,22 +347,23 @@ distclean: clean
 ## the for loop with the sed call.
 
 Makefile.depend: $(SOURCES) $(HEADERS)
-	rm -f Makefile.temp
-	for source in $(SOURCES) ; do \
-	    $(DEPEND) $$source > Makefile.temp0; \
-	    objfile=$${source%%.cc}.o; \
-	    sed -i -e "s@^[^:]*:@$$objfile:@" Makefile.temp0; \
-	    cat Makefile.temp0 >> Makefile.temp; \
-	done
-	rm -f Makefile.temp0 Makefile.depend
-	sed -e "s@\(.*\)\.o:\(.*\)@.obj/\1$(OBJECT_SUFFIX_RELEASE).o:\2@" Makefile.temp >> Makefile.temp0
-	sed -e "s@\(.*\)\.o:\(.*\)@.obj/\1$(OBJECT_SUFFIX_DEBUG).o:\2@" Makefile.temp >> Makefile.temp0
-	sed -e "s@\(.*\)\.o:\(.*\)@.obj/\1$(OBJECT_SUFFIX_PROFILE).o:\2@" Makefile.temp >> Makefile.temp0
-	rm -f Makefile.temp
-	sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.1.\2@" Makefile.temp0 >> Makefile.depend
-	sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.2.\2@" Makefile.temp0 >> Makefile.depend
-	sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.4.\2@" Makefile.temp0 >> Makefile.depend
-	rm -f Makefile.temp0
+	echo "Do nothing for Make.depend"
+#	rm -f Makefile.temp
+#	for source in $(SOURCES) ; do \
+#	    $(DEPEND) $$source > Makefile.temp0; \
+#	    objfile=$${source%%.cc}.o; \
+#	    sed -i -e "s@^[^:]*:@$$objfile:@" Makefile.temp0; \
+#	    cat Makefile.temp0 >> Makefile.temp; \
+#	done
+#	rm -f Makefile.temp0 Makefile.depend
+#	#sed -e "s@\(.*\)\.o:\(.*\)@.obj/\1$(OBJECT_SUFFIX_RELEASE).o:\2@" Makefile.temp >> Makefile.temp0
+#	sed -e "s@\(.*\)\.o:\(.*\)@.obj/\1$(OBJECT_SUFFIX_DEBUG).o:\2@" Makefile.temp >> Makefile.temp0
+#	#sed -e "s@\(.*\)\.o:\(.*\)@.obj/\1$(OBJECT_SUFFIX_PROFILE).o:\2@" Makefile.temp >> Makefile.temp0
+#	rm -f Makefile.temp
+#	#sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.1.\2@" Makefile.temp0 >> Makefile.depend
+#	sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.2.\2@" Makefile.temp0 >> Makefile.depend
+#	#sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.4.\2@" Makefile.temp0 >> Makefile.depend
+#	#rm -f Makefile.temp0
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
@@ -369,4 +371,4 @@ ifneq ($(MAKECMDGOALS),distclean)
 endif
 endif
 
-.PHONY: default all release debug profile clean distclean
+.PHONY: default all release debug profile clean distclean quick
