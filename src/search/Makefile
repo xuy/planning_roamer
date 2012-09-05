@@ -118,6 +118,8 @@ HEADERS += pdbs/canonical_pdbs_heuristic.h \
            pdbs/util.h \
            pdbs/zero_one_pdbs_heuristic.h \
 
+HEADERS+= xuy/feature_extractor.h
+
 SHELL = /bin/bash
 
 SOURCES = planner.cc $(HEADERS:%.h=%.cc)
@@ -364,7 +366,7 @@ Makefile.depend: $(SOURCES) $(HEADERS)
 #	#sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.1.\2@" Makefile.temp0 >> Makefile.depend
 #	sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.2.\2@" Makefile.temp0 >> Makefile.depend
 #	#sed -e "s@\(.*\)\.$(STATE_VAR_BYTES)\.\(.*\)@\1.4.\2@" Makefile.temp0 >> Makefile.depend
-#	#rm -f Makefile.temp0
+#	rm -f Makefile.temp0
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)

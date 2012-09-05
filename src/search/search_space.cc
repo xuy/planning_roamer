@@ -190,6 +190,8 @@ void SearchSpace::dump() {
     for (HashTable::iterator iter = nodes->begin(); iter != nodes->end(); iter++) {
         cout << "#" << i++ << " (" << iter->first.state_data << "): ";
         State(iter->first.state_data).dump();
+        const SearchNodeInfo &info = iter->second;
+        cout << " h value: " << info.h << endl;
         if (iter->second.creating_operator &&
             iter->second.parent_state) {
             cout << " created by " << iter->second.creating_operator->get_name()
