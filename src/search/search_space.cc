@@ -156,6 +156,7 @@ int SearchSpace::size() const {
     return nodes->size();
 }
 
+// TODO(xuy): the place to inject a feature extractor.
 SearchNode SearchSpace::get_node(const State &state) {
     static SearchNodeInfo default_info;
     pair<HashTable::iterator, bool> result = nodes->insert(
