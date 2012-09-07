@@ -185,21 +185,26 @@ void SearchSpace::trace_path(const State &goal_state,
     reverse(path.begin(), path.end());
 }
 
+void SearchSpace::dump_node(const pair<StateProxy, SearchNodeInfo>& iter) {
+   cout << "#" << " (" << iter.first.state_data << "): ";
+   State(iter.first.state_data).dump();
+   const SearchNodeInfo &info = iter.second;
+   cout << " h value: " << info.h << endl;
+   if (iter.second.creating_operator &&
+       iter.second.parent_state) {
+       cout << " created by " << iter.second.creating_operator->get_name()
+            << " from " << iter.second.parent_state << endl;
+   } else {
+       cout << "has no parent" << endl;
+   }
+}
+
+void SearchSpace::process_nodes(NodeCallback callback) {
+    std::for_each(nodes->begin(), nodes->end(), callback);
+}
+
 void SearchSpace::dump() {
-    int i = 0;
-    for (HashTable::iterator iter = nodes->begin(); iter != nodes->end(); iter++) {
-        cout << "#" << i++ << " (" << iter->first.state_data << "): ";
-        State(iter->first.state_data).dump();
-        const SearchNodeInfo &info = iter->second;
-        cout << " h value: " << info.h << endl;
-        if (iter->second.creating_operator &&
-            iter->second.parent_state) {
-            cout << " created by " << iter->second.creating_operator->get_name()
-                 << " from " << iter->second.parent_state << endl;
-        } else {
-            cout << "has no parent" << endl;
-        }
-    }
+    std::for_each(nodes->begin(), nodes->end(), &SearchSpace::dump_node);
 }
 
 void SearchSpace::statistics() const {

@@ -15,6 +15,8 @@ class Operator;
 class State;
 class StateProxy;
 
+typedef void (*NodeCallback)(std::pair<const StateProxy, SearchNodeInfo>);
+
 class SearchNode {
     state_var_t *state_buffer;
     SearchNodeInfo &info;
@@ -54,11 +56,11 @@ public:
     void dump();
 };
 
-
 class SearchSpace {
     class HashTable;
     HashTable *nodes;
     OperatorCost cost_type;
+
 public:
     SearchSpace(OperatorCost cost_type_);
     ~SearchSpace();
@@ -69,6 +71,9 @@ public:
 
     void dump();
     void statistics() const;
+
+    void process_nodes(NodeCallback callback);
+    static void dump_node(const pair<StateProxy, SearchNodeInfo>& iter);
 };
 
 #endif

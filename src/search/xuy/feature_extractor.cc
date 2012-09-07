@@ -10,6 +10,7 @@ FeatureExtractor::~FeatureExtractor() {
 
 void FeatureExtractor::Extract(SearchSpace& space) {
   // TODO(xuy): instead of dumping, actually extract features and learn them.
+  space.statistics();
   space.dump();
 }
 
