@@ -200,12 +200,19 @@ void SearchSpace::dump_node(const pair<StateProxy, SearchNodeInfo>& iter) {
    }
 }
 
-void SearchSpace::process_nodes(NodeCallback callback) {
-    std::for_each(nodes->begin(), nodes->end(), callback);
+void SearchSpace::process_nodes(const NodeCallback* callback) {
+    for (auto& iter : *nodes) {
+      callback->operator()(iter);
+    }
+    // std::for_each(nodes->begin(), nodes->end(), callback);
 }
 
 void SearchSpace::dump() {
-    std::for_each(nodes->begin(), nodes->end(), &SearchSpace::dump_node);
+    for (auto& iter : *nodes) {
+      dump_node(iter);
+    }
+    // NodeMethodClosure<FeatureExtractor> closure(this, &SearchSpace::dump_node);
+    // std::for_each(nodes->begin(), nodes->end(), closure);
 }
 
 void SearchSpace::statistics() const {

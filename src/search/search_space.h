@@ -4,6 +4,7 @@
 #include "state.h" // for state_var_t
 #include <vector>
 #include <ext/hash_map>
+#include "callback.h"
 #include "state.h"
 #include "state_proxy.h"
 #include "search_node_info.h"
@@ -15,7 +16,32 @@ class Operator;
 class State;
 class StateProxy;
 
-typedef void (*NodeCallback)(std::pair<const StateProxy, SearchNodeInfo>);
+// TODO(xuy): transform the following to use callback.{h/cc}.
+
+typedef std::pair<const StateProxy, SearchNodeInfo> SearchSpaceArg;
+
+class NodeCallback : public std::unary_function<SearchSpaceArg, void> {
+  public:
+    virtual void operator() (SearchSpaceArg /*unused_arg*/) const = 0;
+};
+
+template <typename Class>
+class NodeMethodClosure : public NodeCallback {
+ public:
+  typedef void (Class::*MethodType)(SearchSpaceArg);
+
+  NodeMethodClosure(Class* object, MethodType method)
+    : object_(object), method_(method) {}
+  ~NodeMethodClosure() {}
+
+  virtual void operator() (SearchSpaceArg arg) const { 
+    (object_->*method_)(arg);
+  }
+
+ private:
+  Class* object_;
+  MethodType method_;
+};
 
 class SearchNode {
     state_var_t *state_buffer;
@@ -72,7 +98,8 @@ public:
     void dump();
     void statistics() const;
 
-    void process_nodes(NodeCallback callback);
+    void process_nodes(const NodeCallback* callback);
+
     static void dump_node(const pair<StateProxy, SearchNodeInfo>& iter);
 };
 

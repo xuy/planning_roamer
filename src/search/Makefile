@@ -118,7 +118,8 @@ HEADERS += pdbs/canonical_pdbs_heuristic.h \
            pdbs/util.h \
            pdbs/zero_one_pdbs_heuristic.h \
 
-HEADERS+= xuy/feature_extractor.h
+HEADERS += xuy/feature_extractor.h\
+		   callback.h\
 
 SHELL = /bin/bash
 

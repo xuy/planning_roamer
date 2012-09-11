@@ -17,6 +17,9 @@ class FeatureExtractor {
 
     void Extract(SearchSpace& space);
 
+    void first_state_variable(std::pair<const StateProxy, SearchNodeInfo> iter);
+  private:
+    int test_member;
 };
 
 #endif  // XUY_FEATURE_EXTRACTOR
