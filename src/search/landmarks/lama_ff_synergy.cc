@@ -88,7 +88,7 @@ static Synergy *_parse(OptionParser &parser) {
     bool lm_pref_ = true; // this will always be the case because it
                           // does not make sense to use the synergy without
                           // using lm preferred operators
-    opts.set("pref", lm_pref_);
+    opts.setKV("pref", lm_pref_);
 
     LamaFFSynergy *lama_ff_synergy =
         new LamaFFSynergy(opts);

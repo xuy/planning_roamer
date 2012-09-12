@@ -408,12 +408,12 @@ void ShrinkBisimulation::compute_abstraction(
 
 ShrinkStrategy *ShrinkBisimulation::create_default() {
     Options opts;
-    opts.set("max_states", infinity);
-    opts.set("max_states_before_merge", infinity);
-    opts.set<bool>("greedy", false);
-    opts.set("threshold", 1);
-    opts.set("group_by_h", false);
-    opts.set<int>("at_limit", RETURN);
+    opts.setKV("max_states", infinity);
+    opts.setKV("max_states_before_merge", infinity);
+    opts.setKV<bool>("greedy", false);
+    opts.setKV("threshold", 1);
+    opts.setKV("group_by_h", false);
+    opts.setKV<int>("at_limit", RETURN);
 
     return new ShrinkBisimulation(opts);
 }
@@ -437,7 +437,7 @@ static ShrinkStrategy *_parse(OptionParser &parser) {
     int threshold = opts.get<int>("threshold");
     if (threshold == -1) {
         threshold = opts.get<int>("max_states");
-        opts.set("threshold", threshold);
+        opts.setKV("threshold", threshold);
     }
     if (threshold < 1) {
         cerr << "error: bisimulation threshold must be at least 1" << endl;

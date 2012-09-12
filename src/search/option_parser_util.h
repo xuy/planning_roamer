@@ -342,7 +342,7 @@ public:
     std::map<std::string, boost::any> storage;
 
     template <class T>
-    void set(std::string key, T value) {
+    void setKV(std::string key, T value) {
         storage[key] = value;
     }
 

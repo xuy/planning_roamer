@@ -241,7 +241,7 @@ void OptionParser::add_option(
     }
     OptionParser subparser(subtree(parse_tree, arg), dry_run());
     T result = TokenParser<T>::parse(subparser);
-    opts.set(k, result);
+    opts.setKV(k, result);
     //if we have not reached the keyword parameters yet,
     //increment the argument position pointer
     if (arg->key.size() == 0)
@@ -251,14 +251,14 @@ void OptionParser::add_option(
 template <class T>
 void OptionParser::add_list_option(std::string k,
                                    std::vector<T> def_val, std::string h) {
-    opts.set(k, def_val);
+    opts.setKV(k, def_val);
     add_list_option<T>(k, h);
 }
 
 template <class T>
 void OptionParser::add_option(
     std::string k, T def_val, std::string h) {
-    opts.set(k, def_val);
+    opts.setKV(k, def_val);
     add_option<T>(k, h);
 }
 

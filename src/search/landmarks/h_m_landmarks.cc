@@ -1027,7 +1027,7 @@ static LandmarkGraph *_parse(OptionParser &parser) {
     if (parser.help_mode())
         return 0;
 
-    opts.set("explor", new Exploration(opts));
+    opts.setKV("explor", new Exploration(opts));
 
     if (parser.dry_run()) {
         return 0;

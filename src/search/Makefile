@@ -165,8 +165,8 @@ TARGET_DEBUG    = $(TARGET)$(TARGET_SUFFIX_DEBUG)
 OBJECTS_PROFILE = $(SOURCES:%.cc=.obj/%$(OBJECT_SUFFIX_PROFILE).o)
 TARGET_PROFILE  = $(TARGET)$(TARGET_SUFFIX_PROFILE)
 
-#CC     = g++
-CC     = clang++
+#CC     = ccache g++
+CC     = ccache clang++ -Qunused-arguments -fcolor-diagnostics
 #DEPEND = g++ -MM
 
 ## CCOPT, LINKOPT, POSTLINKOPT are options for compiler and linker
@@ -176,7 +176,7 @@ CC     = clang++
 CCOPT = -Iext
 CCOPT += -g
 CCOPT += -m32
-CCOPT += -lrt
+#CCOPT += -lrt
 CCOPT += -Wall -W -Wno-sign-compare -Wno-deprecated -ansi -pedantic -Werror -std=c++0x -DSTATE_VAR_BYTES=$(STATE_VAR_BYTES)
 
 ## The following lines contain workarounds for bugs when
@@ -198,7 +198,7 @@ endif
 
 LINKOPT  = -g
 LINKOPT += -m32
-LINKOPT +=
+LINKOPT += -lrt
 
 POSTLINKOPT =
 

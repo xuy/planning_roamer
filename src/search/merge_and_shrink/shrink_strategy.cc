@@ -165,6 +165,6 @@ void ShrinkStrategy::handle_option_defaults(Options &opts) {
         exit(2);
     }
 
-    opts.set<int>("max_states", max_states);
-    opts.set<int>("max_states_before_merge", max_states_before_merge);
+    opts.setKV<int>("max_states", max_states);
+    opts.setKV<int>("max_states_before_merge", max_states_before_merge);
 }

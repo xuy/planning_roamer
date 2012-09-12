@@ -13,8 +13,8 @@
 class Operator;
 class State;
 
-class RelaxedProposition;
-class RelaxedOperator;
+struct RelaxedProposition;
+struct RelaxedOperator;
 
 class Options;
 /* TODO: Check the impact of using unary relaxed operators instead of

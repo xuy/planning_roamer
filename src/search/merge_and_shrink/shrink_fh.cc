@@ -153,10 +153,10 @@ void ShrinkFH::ordered_buckets_use_vector(
 
 ShrinkStrategy *ShrinkFH::create_default(int max_states) {
     Options opts;
-    opts.set("max_states", max_states);
-    opts.set("max_states_before_merge", max_states);
-    opts.set<int>("shrink_f", ShrinkFH::HIGH);
-    opts.set<int>("shrink_h", ShrinkFH::LOW);
+    opts.setKV("max_states", max_states);
+    opts.setKV("max_states_before_merge", max_states);
+    opts.setKV<int>("shrink_f", ShrinkFH::HIGH);
+    opts.setKV<int>("shrink_h", ShrinkFH::LOW);
     return new ShrinkFH(opts);
 }
 

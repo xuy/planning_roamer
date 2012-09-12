@@ -119,7 +119,7 @@ static LandmarkGraph *_parse(OptionParser &parser) {
     if (parser.dry_run()) {
         return 0;
     } else {
-        opts.set<Exploration *>("explor", new Exploration(opts));
+        opts.setKV<Exploration *>("explor", new Exploration(opts));
         LandmarkGraphMerged lm_graph_factory(opts);
         LandmarkGraph *graph = lm_graph_factory.compute_lm_graph();
         return graph;

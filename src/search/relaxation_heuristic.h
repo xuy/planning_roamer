@@ -8,8 +8,8 @@
 class Operator;
 class State;
 
-class Proposition;
-class UnaryOperator;
+struct Proposition;
+struct UnaryOperator;
 
 struct UnaryOperator {
     int operator_no; // -1 for axioms; index into g_operators otherwise

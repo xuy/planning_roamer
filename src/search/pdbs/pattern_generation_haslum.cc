@@ -175,8 +175,8 @@ void PatternGenerationHaslum::hill_climbing(double average_operator_cost,
         for (size_t i = 0; i < new_candidates.size(); ++i) {
             if (generated_patterns.count(new_candidates[i]) == 0) {
                 Options opts;
-                opts.set<int>("cost_type", cost_type);
-                opts.set<vector<int> >("pattern", new_candidates[i]);
+                opts.setKV<int>("cost_type", cost_type);
+                opts.setKV<vector<int> >("pattern", new_candidates[i]);
                 candidate_pdbs.push_back(new PDBHeuristic(opts, false));
                 max_pdb_size = max(max_pdb_size,
                                    candidate_pdbs.back()->get_size());
@@ -272,8 +272,8 @@ void PatternGenerationHaslum::initialize() {
         initial_pattern_collection.push_back(vector<int>(1, g_goal[i].first));
     }
     Options opts;
-    opts.set<int>("cost_type", cost_type);
-    opts.set<vector<vector<int> > >("patterns", initial_pattern_collection);
+    opts.setKV<int>("cost_type", cost_type);
+    opts.setKV<vector<vector<int> > >("patterns", initial_pattern_collection);
     current_heuristic = new CanonicalPDBsHeuristic(opts);
     current_heuristic->evaluate(*g_initial_state);
     if (current_heuristic->is_dead_end())

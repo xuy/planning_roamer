@@ -6,7 +6,7 @@
 
 class LandmarkNode;
 class Operator;
-class Prevail;
+struct Prevail;
 
 bool _possibly_fires(const std::vector<Prevail> &prevail,
                      const std::vector<std::vector<int> > &lvl_var);

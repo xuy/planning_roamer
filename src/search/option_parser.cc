@@ -368,7 +368,7 @@ void OptionParser::add_enum_option(string k,
             error("invalid enum argument " + name
                   + " for option " + k);
         }
-        opts.set<int>(k, x);
+        opts.setKV<int>(k, x);
     } else {
         //...otherwise try to map the string to its position in the enumeration vector
         transform(enumeration.begin(), enumeration.end(), enumeration.begin(),
@@ -379,7 +379,7 @@ void OptionParser::add_enum_option(string k,
             error("invalid enum argument " + name
                   + " for option " + k);
         }
-        opts.set<int>(k, it - enumeration.begin());
+        opts.setKV<int>(k, it - enumeration.begin());
     }
 }
 

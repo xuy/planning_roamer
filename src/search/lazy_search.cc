@@ -262,7 +262,7 @@ static SearchEngine *_parse_greedy(OptionParser &parser) {
             open = new AlternationOpenList<OpenListEntryLazy>(
                 inner_lists, opts.get<int>("boost"));
         }
-        opts.set("open", open);
+        opts.setKV("open", open);
         engine = new LazySearch(opts);
         engine->set_pref_operator_heuristics(preferred_list);
     }
@@ -320,7 +320,7 @@ static SearchEngine *_parse_weighted_astar(OptionParser &parser) {
                 inner_lists, opts.get<int>("boost"));
         }
 
-        opts.set("open", open);
+        opts.setKV("open", open);
 
         engine = new LazySearch(opts);
         engine->set_pref_operator_heuristics(preferred_list);

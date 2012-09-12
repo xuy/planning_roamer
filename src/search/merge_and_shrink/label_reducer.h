@@ -8,7 +8,7 @@
 #include <cassert>
 #include <vector>
 
-class OperatorSignature;
+struct OperatorSignature;
 
 class LabelReducer {
     std::vector<const Operator *> reduced_label_by_index;

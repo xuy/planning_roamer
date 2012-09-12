@@ -14,8 +14,8 @@
 class Operator;
 class State;
 
-class ExProposition;
-class ExUnaryOperator;
+struct ExProposition;
+struct ExUnaryOperator;
 
 struct ExProposition {
     int var;

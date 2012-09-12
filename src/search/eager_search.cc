@@ -331,7 +331,7 @@ static SearchEngine *_parse(OptionParser &parser) {
 
     EagerSearch *engine = 0;
     if (!parser.dry_run()) {
-        opts.set<bool>("mpd", false);
+        opts.setKV<bool>("mpd", false);
         engine = new EagerSearch(opts);
     }
 
@@ -363,9 +363,9 @@ static SearchEngine *_parse_astar(OptionParser &parser) {
         OpenList<state_var_t *> *open = \
             new TieBreakingOpenList<state_var_t *>(evals, false, false);
 
-        opts.set("open", open);
-        opts.set("f_eval", f_eval);
-        opts.set("reopen_closed", true);
+        opts.setKV("open", open);
+        opts.setKV("f_eval", f_eval);
+        opts.setKV("reopen_closed", true);
         engine = new EagerSearch(opts);
     }
 
@@ -406,14 +406,14 @@ static SearchEngine *_parse_greedy(OptionParser &parser) {
                 inner_lists, opts.get<int>("boost"));
         }
 
-        opts.set("open", open);
-        opts.set("reopen_closed", false);
-        opts.set("pathmax", false);
-        opts.set("mpd", false);
+        opts.setKV("open", open);
+        opts.setKV("reopen_closed", false);
+        opts.setKV("pathmax", false);
+        opts.setKV("mpd", false);
         ScalarEvaluator *sep = 0;
-        opts.set("f_eval", sep);
-        opts.set("bound", numeric_limits<int>::max());
-        opts.set("preferred", preferred_list);
+        opts.setKV("f_eval", sep);
+        opts.setKV("bound", numeric_limits<int>::max());
+        opts.setKV("preferred", preferred_list);
         engine = new EagerSearch(opts);
     }
     return engine;
