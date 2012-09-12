@@ -17,6 +17,6 @@ void FeatureExtractor::first_state_variable(std::pair<const StateProxy, SearchNo
 }
 
 void FeatureExtractor::Extract(SearchSpace& space) {
-    NodeCallback* closure = new NodeMethodClosure<FeatureExtractor>(this, &FeatureExtractor::first_state_variable);
+    InfoNodeCallback* closure = new NodeMethodClosure<FeatureExtractor>(this, &FeatureExtractor::first_state_variable);
     space.process_nodes(closure);
 }

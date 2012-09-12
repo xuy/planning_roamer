@@ -18,23 +18,23 @@ class StateProxy;
 
 // TODO(xuy): transform the following to use callback.{h/cc}.
 
-typedef std::pair<const StateProxy, SearchNodeInfo> SearchSpaceArg;
+typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
 
-class NodeCallback : public std::unary_function<SearchSpaceArg, void> {
+class InfoNodeCallback : public std::unary_function<InfoNode, void> {
   public:
-    virtual void operator() (SearchSpaceArg /*unused_arg*/) const = 0;
+    virtual void operator() (InfoNode /*unused_arg*/) const = 0;
 };
 
 template <typename Class>
-class NodeMethodClosure : public NodeCallback {
+class NodeMethodClosure : public InfoNodeCallback {
  public:
-  typedef void (Class::*MethodType)(SearchSpaceArg);
+  typedef void (Class::*MethodType)(InfoNode);
 
   NodeMethodClosure(Class* object, MethodType method)
     : object_(object), method_(method) {}
   ~NodeMethodClosure() {}
 
-  virtual void operator() (SearchSpaceArg arg) const { 
+  virtual void operator() (InfoNode arg) const { 
     (object_->*method_)(arg);
   }
 
@@ -86,6 +86,7 @@ class SearchSpace {
     class HashTable;
     HashTable *nodes;
     OperatorCost cost_type;
+    vector<InfoNodeCallback*> callbacks_list;
 
 public:
     SearchSpace(OperatorCost cost_type_);
@@ -97,10 +98,12 @@ public:
 
     void dump();
     void statistics() const;
+    static void dump_node(const InfoNode& node);
 
-    void process_nodes(const NodeCallback* callback);
-
-    static void dump_node(const pair<StateProxy, SearchNodeInfo>& iter);
+    // Methods related to feature extraction.
+    void process_nodes(const InfoNodeCallback* callback);
+    void add_node_callback(InfoNodeCallback* callback);
+    void invoke_callbacks(const InfoNode& node);
 };
 
 #endif

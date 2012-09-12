@@ -16,7 +16,7 @@
 class LandmarkGraph;
 class Heuristic;
 class ScalarEvaluator;
-class Synergy;
+struct Synergy;
 class SearchEngine;
 class OptionParser;
 template<class Entry>

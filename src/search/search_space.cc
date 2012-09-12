@@ -156,15 +156,20 @@ int SearchSpace::size() const {
     return nodes->size();
 }
 
-// TODO(xuy): the place to inject a feature extractor.
 SearchNode SearchSpace::get_node(const State &state) {
     static SearchNodeInfo default_info;
-    pair<HashTable::iterator, bool> result = nodes->insert(
-        make_pair(StateProxy(&state), default_info));
+    // About to get info for the pair.
+    // TODO(xuy): think about a good name for this variable and type.
+    // SpaceNode? Node? SuperNode? InfoNode?
+    InfoNode info_pair = make_pair(StateProxy(&state), default_info);
+    pair<HashTable::iterator, bool> result = nodes->insert(info_pair);
+    //     make_pair(StateProxy(&state), default_info));
     if (result.second) {
         // This is a new entry: Must give the state permanent lifetime.
         result.first->first.make_permanent();
     }
+    // TODO(xuy): have two invoke_callbacks: invoke_callback and invoke_new_node_callback.
+    invoke_callbacks(info_pair);
     HashTable::iterator iter = result.first;
     return SearchNode(iter->first.state_data, iter->second, cost_type);
 }
@@ -186,36 +191,45 @@ void SearchSpace::trace_path(const State &goal_state,
     reverse(path.begin(), path.end());
 }
 
-void SearchSpace::dump_node(const pair<StateProxy, SearchNodeInfo>& iter) {
-   cout << "#" << " (" << iter.first.state_data << "): ";
-   State(iter.first.state_data).dump();
-   const SearchNodeInfo &info = iter.second;
+void SearchSpace::dump_node(const InfoNode& node) {
+   cout << "#" << " (" << node.first.state_data << "): ";
+   State(node.first.state_data).dump();
+   const SearchNodeInfo &info = node.second;
    cout << " h value: " << info.h << endl;
-   if (iter.second.creating_operator &&
-       iter.second.parent_state) {
-       cout << " created by " << iter.second.creating_operator->get_name()
-            << " from " << iter.second.parent_state << endl;
+   if (node.second.creating_operator &&
+       node.second.parent_state) {
+       cout << " created by " << node.second.creating_operator->get_name()
+            << " from " << node.second.parent_state << endl;
    } else {
        cout << "has no parent" << endl;
    }
-}
-
-void SearchSpace::process_nodes(const NodeCallback* callback) {
-    for (auto& iter : *nodes) {
-      callback->operator()(iter);
-    }
-    // std::for_each(nodes->begin(), nodes->end(), callback);
 }
 
 void SearchSpace::dump() {
     for (auto& iter : *nodes) {
       dump_node(iter);
     }
-    // NodeMethodClosure<FeatureExtractor> closure(this, &SearchSpace::dump_node);
-    // std::for_each(nodes->begin(), nodes->end(), closure);
 }
 
 void SearchSpace::statistics() const {
     cout << "Search space hash size: " << nodes->size() << endl;
     cout << "Search space hash bucket count: " << nodes->bucket_count() << endl;
 }
+
+/* Methods used by feature extraction.  */
+void SearchSpace::process_nodes(const InfoNodeCallback* callback) {
+    for (auto& iter : *nodes) {
+      callback->operator()(iter);
+    }
+}
+
+void SearchSpace::invoke_callbacks(const InfoNode& node) {
+    for (auto node_callback : callbacks_list) {
+        node_callback->operator()(node);
+    }
+}
+
+void SearchSpace::add_node_callback(InfoNodeCallback* callback) {
+    callbacks_list.push_back(callback);
+}
+

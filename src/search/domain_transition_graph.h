@@ -13,7 +13,7 @@ class Operator;
 
 class ValueNode;
 class ValueTransition;
-class ValueTransitionLabel;
+struct ValueTransitionLabel;
 class DomainTransitionGraph;
 
 // Note: We do not use references but pointers to refer to the "parents" of
