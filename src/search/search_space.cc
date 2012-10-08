@@ -158,18 +158,18 @@ int SearchSpace::size() const {
 
 SearchNode SearchSpace::get_node(const State &state) {
     static SearchNodeInfo default_info;
-    // About to get info for the pair.
-    // TODO(xuy): think about a good name for this variable and type.
-    // SpaceNode? Node? SuperNode? InfoNode?
-    InfoNode info_pair = make_pair(StateProxy(&state), default_info);
-    pair<HashTable::iterator, bool> result = nodes->insert(info_pair);
-    //     make_pair(StateProxy(&state), default_info));
+    InfoNode info_node = make_pair(StateProxy(&state), default_info);
+    pair<HashTable::iterator, bool> result = nodes->insert(info_node);
+    // TODO(xuy): have two diffecnt kind of callbacks / hooks
+    //  1. all_infonode_callback
+    //  2. new_infonode_callback
     if (result.second) {
         // This is a new entry: Must give the state permanent lifetime.
         result.first->first.make_permanent();
+        // new_infonode_callback
     }
-    // TODO(xuy): have two invoke_callbacks: invoke_callback and invoke_new_node_callback.
-    invoke_callbacks(info_pair);
+    // all_infonode_callback 
+    invoke_callbacks(info_node);
     HashTable::iterator iter = result.first;
     return SearchNode(iter->first.state_data, iter->second, cost_type);
 }
