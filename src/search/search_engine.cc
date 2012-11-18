@@ -18,6 +18,7 @@ SearchEngine::SearchEngine(const Options &opts)
         exit(2);
     }
     bound = opts.get<int>("bound");
+    // TODO(xuy): add propriate callback functions here for search_space. 
 }
 
 SearchEngine::~SearchEngine() {
@@ -56,6 +57,7 @@ bool SearchEngine::check_goal_and_set_plan(const State &state) {
         search_space.trace_path(state, plan);
         set_plan(plan);
         FeatureExtractor extractor;
+        // Post search extraction.
         extractor.Extract(search_space);
         return true;
     }

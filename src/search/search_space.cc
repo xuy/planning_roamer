@@ -1,4 +1,4 @@
-#include "search_space.h"
+get#include "search_space.h"
 #include "state.h"
 #include "operator.h"
 
@@ -156,20 +156,24 @@ int SearchSpace::size() const {
     return nodes->size();
 }
 
+SearchSpace::add_new_node_callback(Callback* callback) {
+
+}
+
+// The key function for state space search. It is called to transform a state to a node in
+// state space. This is the place to add callback functions.
 SearchNode SearchSpace::get_node(const State &state) {
     static SearchNodeInfo default_info;
     InfoNode info_node = make_pair(StateProxy(&state), default_info);
     pair<HashTable::iterator, bool> result = nodes->insert(info_node);
-    // TODO(xuy): have two diffecnt kind of callbacks / hooks
-    //  1. all_infonode_callback
-    //  2. new_infonode_callback
     if (result.second) {
         // This is a new entry: Must give the state permanent lifetime.
         result.first->first.make_permanent();
-        // new_infonode_callback
+        // Invoke callback functions that is applied to only new nodes.
+        invoke_callbacks(info_node, new_node_callbacks);
     }
-    // all_infonode_callback 
-    invoke_callbacks(info_node);
+    // Invoke callback functions that is applied to all get_node calls.
+    invoke_callbacks(info_node, get_node_callbacks);
     HashTable::iterator iter = result.first;
     return SearchNode(iter->first.state_data, iter->second, cost_type);
 }
@@ -223,13 +227,18 @@ void SearchSpace::process_nodes(const InfoNodeCallback* callback) {
     }
 }
 
-void SearchSpace::invoke_callbacks(const InfoNode& node) {
-    for (auto node_callback : callbacks_list) {
-        node_callback->operator()(node);
-    }
+void SearchSpace::invoke_callbacks(const InfoNode& node,
+    const vector<InfoNodeCallback*>& callbacks) {
+  for (auto node_callback : callbacks) {
+    node_callback->operator()(node);
+  }
+}
+
+void SearchSpace::add_new_node_callback(InfoNodeCallback* callback) {
+  new_node_callbacks.push_back(callback);
 }
 
 void SearchSpace::add_node_callback(InfoNodeCallback* callback) {
-    callbacks_list.push_back(callback);
+  get_node_callbacks.push_back(callback);
 }
 
