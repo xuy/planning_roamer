@@ -17,6 +17,8 @@ void FeatureExtractor::first_state_variable(std::pair<const StateProxy, SearchNo
     cout << "First var " << new_state[0] << " test member " << test_member << endl;
 }
 
+// TODO(xuy): the logistic learning algorithm here.
+
 // [Post search] This method will extract features from search space.
 void FeatureExtractor::Extract(SearchSpace& space) {
     InfoNodeCallback* closure = new NodeMethodClosure<FeatureExtractor>(this, &FeatureExtractor::first_state_variable);

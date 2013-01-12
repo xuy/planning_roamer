@@ -16,13 +16,12 @@ class Operator;
 class State;
 class StateProxy;
 
-// TODO(xuy): transform the following to use callback.{h/cc}.
-
 typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
 
 class InfoNodeCallback : public std::unary_function<InfoNode, void> {
   public:
     virtual void operator() (InfoNode /*unused_arg*/) const = 0;
+    virtual ~InfoNodeCallback() {}
 };
 
 template <typename Class>
@@ -32,7 +31,7 @@ class NodeMethodClosure : public InfoNodeCallback {
 
   NodeMethodClosure(Class* object, MethodType method)
     : object_(object), method_(method) {}
-  ~NodeMethodClosure() {}
+  virtual ~NodeMethodClosure() {}
 
   virtual void operator() (InfoNode arg) const { 
     (object_->*method_)(arg);

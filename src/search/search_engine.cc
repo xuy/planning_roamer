@@ -18,7 +18,13 @@ SearchEngine::SearchEngine(const Options &opts)
         exit(2);
     }
     bound = opts.get<int>("bound");
-    // TODO(xuy): add propriate callback functions here for search_space. 
+
+    // Note: allocate extractor on stack will cause it to be destructed by the end of
+    // this method. Allocate it on heap instead.
+    FeatureExtractor* extractor = new FeatureExtractor();
+    InfoNodeCallback* first_variable = new NodeMethodClosure<FeatureExtractor>(
+        extractor, &FeatureExtractor::first_state_variable);
+    search_space.add_new_node_callback(first_variable);
 }
 
 SearchEngine::~SearchEngine() {
@@ -57,8 +63,8 @@ bool SearchEngine::check_goal_and_set_plan(const State &state) {
         search_space.trace_path(state, plan);
         set_plan(plan);
         FeatureExtractor extractor;
-        // Post search extraction.
-        extractor.Extract(search_space);
+        // Post search extraction if needed.
+        // extractor.Extract(search_space);
         return true;
     }
     return false;

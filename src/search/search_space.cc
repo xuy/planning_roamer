@@ -1,4 +1,4 @@
-get#include "search_space.h"
+#include "search_space.h"
 #include "state.h"
 #include "operator.h"
 
@@ -156,12 +156,9 @@ int SearchSpace::size() const {
     return nodes->size();
 }
 
-SearchSpace::add_new_node_callback(Callback* callback) {
-
-}
-
-// The key function for state space search. It is called to transform a state to a node in
-// state space. This is the place to add callback functions.
+// Get_node is the key function for state space search. It is called to
+// transform a state to a node in state space. This is the place to add
+// callback functions.  
 SearchNode SearchSpace::get_node(const State &state) {
     static SearchNodeInfo default_info;
     InfoNode info_node = make_pair(StateProxy(&state), default_info);
