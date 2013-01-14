@@ -5,6 +5,7 @@
 #include <vector>
 #include <ext/hash_map>
 #include "callback.h"
+#include "info_node.h"
 #include "state.h"
 #include "state_proxy.h"
 #include "search_node_info.h"
@@ -14,33 +15,6 @@
 
 class Operator;
 class State;
-class StateProxy;
-
-typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
-
-class InfoNodeCallback : public std::unary_function<InfoNode, void> {
-  public:
-    virtual void operator() (InfoNode /*unused_arg*/) const = 0;
-    virtual ~InfoNodeCallback() {}
-};
-
-template <typename Class>
-class NodeMethodClosure : public InfoNodeCallback {
- public:
-  typedef void (Class::*MethodType)(InfoNode);
-
-  NodeMethodClosure(Class* object, MethodType method)
-    : object_(object), method_(method) {}
-  virtual ~NodeMethodClosure() {}
-
-  virtual void operator() (InfoNode arg) const { 
-    (object_->*method_)(arg);
-  }
-
- private:
-  Class* object_;
-  MethodType method_;
-};
 
 class SearchNode {
     state_var_t *state_buffer;

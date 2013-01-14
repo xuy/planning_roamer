@@ -28,6 +28,7 @@ HEADERS = \
           g_evaluator.h \
           globals.h \
           heuristic.h \
+          info_node.h \
           ipc_max_heuristic.h \
           iterated_search.h \
           lazy_search.h \

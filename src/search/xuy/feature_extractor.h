@@ -1,5 +1,5 @@
-#ifndef XUY_FEATURE_EXTRACTOR
-#define XUY_FEATURE_EXTRACTOR
+#ifndef XUY_FEATURE_EXTRACTOR_H
+#define XUY_FEATURE_EXTRACTOR_H
 
 #include <utility>
 
@@ -22,4 +22,4 @@ class FeatureExtractor {
     int test_member;
 };
 
-#endif  // XUY_FEATURE_EXTRACTOR
+#endif  // XUY_FEATURE_EXTRACTOR_H
