@@ -6,17 +6,26 @@
 
 class StateProxy;
 
-// StateProxy is defined in state_proxy.h. It is a pointer that maps
-// to the actualy FD State class. SearchNodeInfo is defined in
-// search_node_info.h. It is the grahy search version of a state node,
-// which contains NEW/OPEN/CLOSE info, g and h values, parent info etc.
-// A SearchSpace maintains a collection of InfoNodes.
+// StateProxy is defined in state_proxy.h. It is a pointer that maps to an
+// underlying storage area to represent a state. SearchNodeInfo SearchNodeInfo
+// is defined in search_node_info.h. It provides extra fields to support graph
+// search.  For instance, the NEW/OPEN/CLOSE info and the g and h values are
+// all stored in SearchNodeInfo.  A SearchSpace maintains a hash table that
+// maps states to their SearchNodeInfo. InfoNode is used as a handy type alias
+// to represent those entries in the hash table.
 typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
 
-class InfoNodeCallback : public std::unary_function<InfoNode, void> {
+// Ideally, all callback functions that inspects the search space at search time
+// should take InfoNode as a parameter. However, C++ pairs are always copy-constructed,
+// meaning any changes made to InfoNode in callback does not actually change the
+// entry stored in StateSpace's hashtable. So, all callback functiosn are taking
+// in two parameters, StateProxy and SearchNodeInfo*, instead of InfoNode.
+
+class NodeCallback : public std::binary_function<const StateProxy&, SearchNodeInfo*, void> {
   public:
-    virtual void operator() (InfoNode /*unused_arg*/) const = 0;
-    virtual ~InfoNodeCallback() {}
+    virtual void operator() (
+        const StateProxy& /*unused_arg*/, SearchNodeInfo* /*unused_arg*/) const = 0;
+    virtual ~NodeCallback() {}
 };
 
 // Note to users: always use InfoNodeCallback pointers to denote
@@ -30,16 +39,16 @@ class InfoNodeCallback : public std::unary_function<InfoNode, void> {
 //      NodeFunction(some_method);
 // It is less useful, however, because it does not maintain inner states.
 template <typename Class>
-class NodeMethodClosure : public InfoNodeCallback {
+class NodeMethodClosure : public NodeCallback {
  public:
-  typedef void (Class::*MethodType)(InfoNode);
+  typedef void (Class::*MethodType)(const StateProxy&, SearchNodeInfo*);
 
   NodeMethodClosure(Class* object, MethodType method)
     : object_(object), method_(method) {}
   virtual ~NodeMethodClosure() {}
 
-  virtual void operator() (InfoNode arg) const { 
-    (object_->*method_)(arg);
+  virtual void operator() (const StateProxy& arg1, SearchNodeInfo* arg2) const { 
+    (object_->*method_)(arg1, arg2);
   }
 
  private:

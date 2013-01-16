@@ -4,6 +4,11 @@
 #include "state.h"
 
 class SearchNodeInfo {
+  public:	
+    // Begin Fields added by Eric to book-keep things.
+    int order;
+    // End Fields added by Eric to book-keep things.
+
     friend class SearchNode;
     friend class SearchSpace;
 
@@ -16,7 +21,6 @@ class SearchNodeInfo {
     const state_var_t *parent_state;
     const Operator *creating_operator;
     int real_g;
-
     SearchNodeInfo()
         : status(NEW), g(-1), h(-1), h_is_dirty(false),
           parent_state(0), creating_operator(0), real_g(-1) {

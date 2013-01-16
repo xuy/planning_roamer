@@ -41,6 +41,7 @@ public:
     const state_var_t *get_buffer() const {
         return vars;
     }
+
 };
 
 #endif

@@ -7,7 +7,8 @@ using namespace std;
 #include "search_engine.h"
 #include "timer.h"
 #include "option_parser.h"
-#include "xuy/feature_extractor.h"
+//#include "xuy/feature_extractor.h"
+#include "xuy/state_order_tagger.h"
 
 SearchEngine::SearchEngine(const Options &opts)
     : search_space(OperatorCost(opts.get_enum("cost_type"))),
@@ -21,10 +22,10 @@ SearchEngine::SearchEngine(const Options &opts)
 
     // Note: allocate extractor on stack will cause it to be destructed by the end of
     // this method. Allocate it on heap instead.
-    FeatureExtractor* extractor = new FeatureExtractor();
-    InfoNodeCallback* first_variable = new NodeMethodClosure<FeatureExtractor>(
-        extractor, &FeatureExtractor::first_state_variable);
-    search_space.add_new_node_callback(first_variable);
+    StateOrderTagger* tagger = new StateOrderTagger();
+    NodeCallback* tagger_function = new NodeMethodClosure<StateOrderTagger>(
+        tagger, &StateOrderTagger::tag_state);
+    search_space.add_new_node_callback(tagger_function);
 }
 
 SearchEngine::~SearchEngine() {
@@ -62,9 +63,10 @@ bool SearchEngine::check_goal_and_set_plan(const State &state) {
         Plan plan;
         search_space.trace_path(state, plan);
         set_plan(plan);
-        FeatureExtractor extractor;
+        StateOrderTagger tagger;
+
         // Post search extraction if needed.
-        // extractor.Extract(search_space);
+        tagger.DumpTags(search_space);
         return true;
     }
     return false;

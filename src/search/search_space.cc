@@ -163,15 +163,19 @@ SearchNode SearchSpace::get_node(const State &state) {
     static SearchNodeInfo default_info;
     InfoNode info_node = make_pair(StateProxy(&state), default_info);
     pair<HashTable::iterator, bool> result = nodes->insert(info_node);
+    HashTable::iterator iter = result.first;
     if (result.second) {
         // This is a new entry: Must give the state permanent lifetime.
         result.first->first.make_permanent();
         // Invoke callback functions that is applied to only new nodes.
-        invoke_callbacks(info_node, new_node_callbacks);
+        for (auto node_callback : new_node_callbacks) {
+    	    node_callback->operator()(iter->first, &iter->second);
+        }
     }
     // Invoke callback functions that is applied to all get_node calls.
-    invoke_callbacks(info_node, get_node_callbacks);
-    HashTable::iterator iter = result.first;
+    for (auto node_callback : get_node_callbacks) {
+        node_callback->operator()(iter->first, &iter->second);
+    }
     return SearchNode(iter->first.state_data, iter->second, cost_type);
 }
 
@@ -218,24 +222,17 @@ void SearchSpace::statistics() const {
 }
 
 /* Methods used by feature extraction.  */
-void SearchSpace::process_nodes(const InfoNodeCallback* callback) {
+void SearchSpace::process_nodes(const NodeCallback* callback) {
     for (auto& iter : *nodes) {
-      callback->operator()(iter);
+      callback->operator()(iter.first, &(iter.second));
     }
 }
 
-void SearchSpace::invoke_callbacks(const InfoNode& node,
-    const vector<InfoNodeCallback*>& callbacks) {
-  for (auto node_callback : callbacks) {
-    node_callback->operator()(node);
-  }
-}
-
-void SearchSpace::add_new_node_callback(InfoNodeCallback* callback) {
+void SearchSpace::add_new_node_callback(NodeCallback* callback) {
   new_node_callbacks.push_back(callback);
 }
 
-void SearchSpace::add_node_callback(InfoNodeCallback* callback) {
+void SearchSpace::add_node_callback(NodeCallback* callback) {
   get_node_callbacks.push_back(callback);
 }
 

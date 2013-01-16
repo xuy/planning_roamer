@@ -12,12 +12,10 @@ FeatureExtractor::~FeatureExtractor() {
 }
 
 // The actual method that extracts the first state variable from the state variable.
-void FeatureExtractor::first_state_variable(std::pair<const StateProxy, SearchNodeInfo> iter) {
-    const State new_state(iter.first.state_data);
+void FeatureExtractor::first_state_variable(StateProxy& proxy, SearchNodeInfo* iter) {
+    const State new_state(proxy.state_data);
     cout << "First var " << new_state[0] << " test member " << test_member << endl;
 }
-
-// TODO(xuy): the logistic learning algorithm here for learning heuristic functions.
 
 // [Post search] This method will extract features from search space.
 void FeatureExtractor::Extract(SearchSpace& space) {
