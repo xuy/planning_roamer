@@ -1,0 +1,5 @@
+*.pyc
+elapsed.time
+output
+output.sas
+plan_numbers_and_cost

@@ -34,22 +34,22 @@ if [[ "$#" < 2 ]]; then
     usage
 fi
 
-echo "1. Running translator"
+#echo "1. Running translator"
 if [[ -e "$2" ]]; then
-    echo "Second argument is a file name: use two translator arguments."
+    #echo "Second argument is a file name: use two translator arguments."
     $TIME "$TRANSLATE" "$1" "$2" > /dev/null
     shift 2
 else
-    echo "Second argument is not a file name: auto-detect domain file."
+    #echo "Second argument is not a file name: auto-detect domain file."
     $TIME "$TRANSLATE" "$1" > /dev/null
     shift
 fi
-echo
+#echo
 
-echo "2. Running preprocessor"
+#echo "2. Running preprocessor"
 $TIME --append "$PREPROCESS" < output.sas > /dev/null
-echo
+#echo
 
-echo "3. Running search"
+#echo "3. Running search"
 "$SEARCH" < output "$@"
-echo
+#echo
