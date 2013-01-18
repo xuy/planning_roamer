@@ -1,0 +1,7 @@
+For quick experiments, use
+
+./quick_run [domain_short_name] [problem_index]
+
+e.g.
+
+"quick_run air 2" will run problem #2 in the airport domain.
