@@ -12,6 +12,7 @@ class DomainTransitionGraph;
 class State;
 struct ValueNode;
 
+// Class for calculating causal graph heuristics.
 class CGHeuristic : public Heuristic {
     std::vector<AdaptiveQueue<ValueNode *> *> prio_queues;
 

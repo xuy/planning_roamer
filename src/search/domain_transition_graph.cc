@@ -50,13 +50,16 @@ DomainTransitionGraph::DomainTransitionGraph(int var_index, int node_count) {
 
 void DomainTransitionGraph::read_data(istream &in) {
     check_magic(in, "begin_DTG");
-
+    cout << "Read DTG..." << endl;
     map<int, int> global_to_local_child;
     map<int, int> global_to_cea_parent;
-    map<pair<int, int>, int> transition_index;
-    // TODO: This transition index business is caused by the fact
-    //       that transitions in the input are not grouped by target
-    //       like they should be. Change this.
+    // Local transition index is not global. Each origin node has its own
+    // index. So if a DTG has 1->2 and 2->3, 1->2 takes local transition index
+    // 0 for node 1, and 2->3 takes transition index 0 for node 2.
+    map<pair<int, int>, int> local_transition_index;
+    // TODO: This local transition index business is caused by the fact that
+    // transitions in the input are not grouped by target like they should be.
+    // Change this.
 
     for (int origin = 0; origin < nodes.size(); origin++) {
         int trans_count;
@@ -67,13 +70,17 @@ void DomainTransitionGraph::read_data(istream &in) {
             in >> operator_index;
 
             pair<int, int> arc = make_pair(origin, target);
-            if (!transition_index.count(arc)) {
-                transition_index[arc] = nodes[origin].transitions.size();
+            if (local_transition_index.count(arc) == 0) {
+                local_transition_index[arc] = nodes[origin].transitions.size();
                 nodes[origin].transitions.push_back(ValueTransition(&nodes[target]));
             }
+            if (transition_index.count(arc) == 0) {
+                transition_index[arc] = transition_index.size();
+                cout << transition_index.size() << endl;
+            }
 
-            assert(transition_index.count(arc));
-            ValueTransition *transition = &nodes[origin].transitions[transition_index[arc]];
+            assert(local_transition_index.count(arc));
+            ValueTransition *transition = &nodes[origin].transitions[local_transition_index[arc]];
 
             vector<LocalAssignment> precond;
             vector<LocalAssignment> cea_precond;
@@ -178,6 +185,15 @@ void DomainTransitionGraph::get_successors(int value, vector<int> &result) const
         result.push_back(transitions[i].target->value);
 }
 
+/*
+int DomainTransitionGraph::get_transition_index(int origin, int target) const {
+    pair<int, int> arc = make_pair(origin, target);
+    if (!transition_index.count(arc)) {
+        return transition_index.find(arc)->second;
+    }
+    return -1;
+}
+*/
 class hash_pair_vector {
 public:
     size_t operator()(const vector<pair<int, int> > &vec) const {

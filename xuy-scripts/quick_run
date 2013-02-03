@@ -1,4 +1,4 @@
 #!/bin/sh
 cp /home/ubuntu/problems.py ./Problems.py
-python ./quick_run.py $1 $2
+python ./_quick_run.py $1 $2
 ./cleanup

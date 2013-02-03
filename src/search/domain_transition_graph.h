@@ -90,6 +90,9 @@ class DomainTransitionGraph {
     bool is_axiom;
     vector<ValueNode> nodes;
 
+    // Makes an arc in this DTG to an unique integer value.
+    map<pair<int, int>, int> transition_index;
+
     int last_helpful_transition_extraction_time; // cg heuristic; "dirty bit"
 
     vector<int> local_to_global_child;
@@ -105,8 +108,11 @@ public:
 
     void dump() const;
 
-    void get_successors(int value, vector<int> &result) const;
     // Build vector of values v' such that there is a transition from value to v'.
+    void get_successors(int value, vector<int> &result) const;
+
+    // Returns a unique encoding for the transition.
+    // int get_transition_index(int source, int target) const;
 
     static void read_all(istream &in);
 };
