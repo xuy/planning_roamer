@@ -19,7 +19,7 @@ void FeatureExtractor::first_state_variable(StateProxy& proxy, SearchNodeInfo* i
 
 // [Post search] This method will extract features from search space.
 void FeatureExtractor::Extract(SearchSpace& space) {
-    InfoNodeCallback* closure = new NodeMethodClosure<FeatureExtractor>(this, &FeatureExtractor::first_state_variable);
+    InfoSearchSpaceNodeCallback* closure = new NodeMethodClosure<FeatureExtractor>(this, &FeatureExtractor::first_state_variable);
     space.process_nodes(closure);
     delete closure;
 }

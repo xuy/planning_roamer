@@ -10,8 +10,7 @@
 using namespace std;
 using namespace __gnu_cxx;
 
-
-
+typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
 
 SearchNode::SearchNode(state_var_t *state_buffer_, SearchNodeInfo &info_, OperatorCost cost_type_)
     : state_buffer(state_buffer_), info(info_), cost_type(cost_type_) {
@@ -84,6 +83,10 @@ void SearchNode::open(int h, const SearchNode &parent_node,
     info.h = h;
     info.parent_state = parent_node.state_buffer;
     info.creating_operator = parent_op;
+    cout << "SearchNode::open called on parent \n"
+         << "my h: " << h << "  parent h " << parent_node.info.h << endl;
+    // TODO(xuy): 1. Learn the delta h here via callback.
+    //            2. Encode the transitions to a feature vector.
 }
 
 void SearchNode::reopen(const SearchNode &parent_node,
@@ -103,6 +106,7 @@ void SearchNode::reopen(const SearchNode &parent_node,
 // like reopen, except doesn't change status
 void SearchNode::update_parent(const SearchNode &parent_node,
                                const Operator *parent_op) {
+    cout << "update_parent called by something -- eager search\n";
     assert(info.status == SearchNodeInfo::OPEN ||
            info.status == SearchNodeInfo::CLOSED);
     // The latter possibility is for inconsistent heuristics, which
@@ -127,13 +131,14 @@ void SearchNode::mark_as_dead_end() {
     info.status = SearchNodeInfo::DEAD_END;
 }
 
-void SearchNode::dump() {
+void SearchNode::dump() const {
     cout << state_buffer << ": ";
     State(state_buffer).dump();
     cout << " created by " << info.creating_operator->get_name()
          << " from " << info.parent_state << endl;
 }
 
+///////// For SearchSpace
 class SearchSpace::HashTable
     : public __gnu_cxx::hash_map<StateProxy, SearchNodeInfo> {
     // This is more like a typedef really, but we need a proper class
@@ -156,9 +161,12 @@ int SearchSpace::size() const {
     return nodes->size();
 }
 
-// Get_node is the key function for state space search. It is called to
-// transform a state to a node in state space. This is the place to add
-// callback functions.  
+// Get_node is the function that translates a state (a vector of variable
+// assignments) to a permanent SearchNode storage that contains the heuristic
+// value etc. SearchSpace serves as a defaultdict here. Callback functions
+// here can cover every possible state in the search space, but it does not
+// have the heuristic value (yet) as SearchNodeInfo are not initialized yet.
+// SearchNodeInfo is initialized in the "open/reopen" function.
 SearchNode SearchSpace::get_node(const State &state) {
     static SearchNodeInfo default_info;
     InfoNode info_node = make_pair(StateProxy(&state), default_info);
@@ -222,17 +230,17 @@ void SearchSpace::statistics() const {
 }
 
 /* Methods used by feature extraction.  */
-void SearchSpace::process_nodes(const NodeCallback* callback) {
+void SearchSpace::process_nodes(const SearchSpaceNodeCallback* callback) {
     for (auto& iter : *nodes) {
       callback->operator()(iter.first, &(iter.second));
     }
 }
 
-void SearchSpace::add_new_node_callback(NodeCallback* callback) {
+void SearchSpace::add_new_node_callback(SearchSpaceNodeCallback* callback) {
   new_node_callbacks.push_back(callback);
 }
 
-void SearchSpace::add_node_callback(NodeCallback* callback) {
+void SearchSpace::add_node_callback(SearchSpaceNodeCallback* callback) {
   get_node_callbacks.push_back(callback);
 }
 

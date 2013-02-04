@@ -112,7 +112,9 @@ public:
     void get_successors(int value, vector<int> &result) const;
 
     // Returns a unique encoding for the transition.
-    // int get_transition_index(int source, int target) const;
+    int get_transition_index(int source, int target) const;
+
+    void add_nop_transtion_indices();
 
     static void read_all(istream &in);
 };

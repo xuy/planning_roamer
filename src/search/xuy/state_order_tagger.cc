@@ -25,7 +25,7 @@ void StateOrderTagger::print_tags(const StateProxy&, SearchNodeInfo* info) {
 
 // [Post search] This method will extract features from search space.
 void StateOrderTagger::DumpTags(SearchSpace& space) {
-    NodeCallback* closure = new NodeMethodClosure<StateOrderTagger>(
+    SearchSpaceNodeCallback* closure = new NodeMethodClosure<StateOrderTagger>(
 	this, &StateOrderTagger::print_tags);
     cout << ">>>>>>>" << endl;
     space.process_nodes(closure);

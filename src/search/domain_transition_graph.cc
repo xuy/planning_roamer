@@ -50,7 +50,6 @@ DomainTransitionGraph::DomainTransitionGraph(int var_index, int node_count) {
 
 void DomainTransitionGraph::read_data(istream &in) {
     check_magic(in, "begin_DTG");
-    cout << "Read DTG..." << endl;
     map<int, int> global_to_local_child;
     map<int, int> global_to_cea_parent;
     // Local transition index is not global. Each origin node has its own
@@ -76,7 +75,6 @@ void DomainTransitionGraph::read_data(istream &in) {
             }
             if (transition_index.count(arc) == 0) {
                 transition_index[arc] = transition_index.size();
-                cout << transition_index.size() << endl;
             }
 
             assert(local_transition_index.count(arc));
@@ -168,6 +166,9 @@ void DomainTransitionGraph::read_data(istream &in) {
                 ValueTransitionLabel(the_operator, cea_precond, cea_effect));
         }
     }
+
+    add_nop_transtion_indices();
+
     check_magic(in, "end_DTG");
 }
 
@@ -185,7 +186,6 @@ void DomainTransitionGraph::get_successors(int value, vector<int> &result) const
         result.push_back(transitions[i].target->value);
 }
 
-/*
 int DomainTransitionGraph::get_transition_index(int origin, int target) const {
     pair<int, int> arc = make_pair(origin, target);
     if (!transition_index.count(arc)) {
@@ -193,7 +193,17 @@ int DomainTransitionGraph::get_transition_index(int origin, int target) const {
     }
     return -1;
 }
-*/
+
+
+// Encode all nop transitions as one integeter.
+void DomainTransitionGraph::add_nop_transtion_indices() {
+    int count = transition_index.size();
+    for (int node = 0; node < nodes.size(); node++) {
+        pair<int, int> nop_arc = make_pair(node, node);
+        transition_index[nop_arc] = count;
+    }
+}
+
 class hash_pair_vector {
 public:
     size_t operator()(const vector<pair<int, int> > &vec) const {
