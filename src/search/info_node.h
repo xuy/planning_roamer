@@ -19,28 +19,28 @@ class StateProxy;
 // should take InfoNode as a parameter. However, C++ pairs are always copy-constructed,
 // meaning any changes made to InfoNode in callback does not actually change the
 // entry stored in StateSpace's hashtable. So, all callback functions are taking
-// in two parameters, StateProxy and SearchNodeInfo*, instead of InfoNode.
-class SearchSpaceNodeCallback : public std::binary_function<const StateProxy&, SearchNodeInfo*, void> {
+// in two parameters, StateProxy and SearchNodeInfo*, instead of a simple pair.
+class SearchSpaceCallback : public std::binary_function<const StateProxy&, SearchNodeInfo*, void> {
   public:
     virtual void operator() (
         const StateProxy& /*unused_arg*/, SearchNodeInfo* /*unused_arg*/) const = 0;
-    virtual ~SearchSpaceNodeCallback() {}
+    virtual ~SearchSpaceCallback() {}
 };
 
 // Usage:
-//      SearchSpaceNodeCallback* closure =
-//          NodeMethodClosure<FeatureExtractor>(
+//      SearchSpaceCallback* closure =
+//          SearchSpaceClosure<FeatureExtractor>(
 //              object, &Class::member_method);
 // Here "object" is an object of Class type. object.member_method() will
 // be invoked when this callback function is invoked.
 template <typename Class>
-class NodeMethodClosure : public SearchSpaceNodeCallback {
+class SearchSpaceClosure : public SearchSpaceCallback {
  public:
   typedef void (Class::*MethodType)(const StateProxy&, SearchNodeInfo*);
 
-  NodeMethodClosure(Class* object, MethodType method)
+  SearchSpaceClosure(Class* object, MethodType method)
     : object_(object), method_(method) {}
-  virtual ~NodeMethodClosure() {}
+  virtual ~SearchSpaceClosure() {}
 
   virtual void operator() (const StateProxy& arg1, SearchNodeInfo* arg2) const { 
     (object_->*method_)(arg1, arg2);

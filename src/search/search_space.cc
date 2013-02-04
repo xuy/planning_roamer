@@ -230,17 +230,17 @@ void SearchSpace::statistics() const {
 }
 
 /* Methods used by feature extraction.  */
-void SearchSpace::process_nodes(const SearchSpaceNodeCallback* callback) {
+void SearchSpace::process_nodes(const SearchSpaceCallback* callback) {
     for (auto& iter : *nodes) {
       callback->operator()(iter.first, &(iter.second));
     }
 }
 
-void SearchSpace::add_new_node_callback(SearchSpaceNodeCallback* callback) {
+void SearchSpace::add_new_node_callback(SearchSpaceCallback* callback) {
   new_node_callbacks.push_back(callback);
 }
 
-void SearchSpace::add_node_callback(SearchSpaceNodeCallback* callback) {
+void SearchSpace::add_node_callback(SearchSpaceCallback* callback) {
   get_node_callbacks.push_back(callback);
 }
 

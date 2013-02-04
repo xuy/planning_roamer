@@ -23,7 +23,7 @@ SearchEngine::SearchEngine(const Options &opts)
     // Note: allocate extractor on stack will cause it to be destructed by the end of
     // this method. Allocate it on heap instead.
     StateOrderTagger* tagger = new StateOrderTagger();
-    SearchSpaceNodeCallback* tagger_function = new NodeMethodClosure<StateOrderTagger>(
+    SearchSpaceCallback* tagger_function = new SearchSpaceClosure<StateOrderTagger>(
         tagger, &StateOrderTagger::tag_state);
     search_space.add_new_node_callback(tagger_function);
 }
