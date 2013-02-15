@@ -1,6 +1,7 @@
 #ifndef INFO_NODE_H
 #define INFO_NODE_H
 
+#include "operator.h"
 #include "search_node_info.h"
 #include "state_proxy.h"
 
@@ -27,12 +28,12 @@ class SearchSpaceCallback : public std::binary_function<const StateProxy&, Searc
     virtual ~SearchSpaceCallback() {}
 };
 
+// SearchSpaceClosure is a SearchSpaceCallback that wraps the member 
+// function of an object as the callback function.
 // Usage:
 //      SearchSpaceCallback* closure =
 //          SearchSpaceClosure<FeatureExtractor>(
 //              object, &Class::member_method);
-// Here "object" is an object of Class type. object.member_method() will
-// be invoked when this callback function is invoked.
 template <typename Class>
 class SearchSpaceClosure : public SearchSpaceCallback {
  public:
@@ -43,6 +44,36 @@ class SearchSpaceClosure : public SearchSpaceCallback {
   virtual ~SearchSpaceClosure() {}
 
   virtual void operator() (const StateProxy& arg1, SearchNodeInfo* arg2) const { 
+    (object_->*method_)(arg1, arg2);
+  }
+
+ private:
+  Class* object_;
+  MethodType method_;
+};
+
+// Callback that happens when you open a new node.
+class SearchNodeOpenCallback : public std::binary_function
+    <const int, const Operator*, void> {
+  public:
+    virtual void operator() (
+        const int delta /*unused_arg*/,
+        const Operator* parent_op /*unused_arg*/) const = 0;
+    
+    virtual ~SearchNodeOpenCallback() {}
+};
+
+template <typename Class>
+class SearchNodeOpenClosure : public SearchNodeOpenCallback {
+ public:
+  typedef void (Class::*MethodType)(const int delta, const Operator* parent_op);
+
+  SearchNodeOpenClosure(Class* object, MethodType method)
+    : object_(object), method_(method) {}
+
+  virtual ~SearchNodeOpenClosure() {}
+
+  virtual void operator() (const int arg1, const Operator* arg2) const { 
     (object_->*method_)(arg1, arg2);
   }
 
