@@ -8,6 +8,7 @@ using namespace std;
 #include "timer.h"
 #include "option_parser.h"
 //#include "xuy/feature_extractor.h"
+#include "xuy/logistic_learner.h"
 #include "xuy/state_order_tagger.h"
 
 SearchEngine::SearchEngine(const Options &opts)
@@ -26,6 +27,13 @@ SearchEngine::SearchEngine(const Options &opts)
     SearchSpaceCallback* tagger_function = new SearchSpaceClosure<StateOrderTagger>(
         tagger, &StateOrderTagger::tag_state);
     search_space.add_new_node_callback(tagger_function);
+    
+    // Logistic Learner.
+    LogisticLearner* learner = new LogisticLearner();
+    SearchNodeOpenCallback* learner_function =
+        new SearchNodeOpenClosure<LogisticLearner>(
+            learner, &LogisticLearner::learn);
+    search_space.set_open_node_callback(learner_function);
 }
 
 SearchEngine::~SearchEngine() {

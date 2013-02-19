@@ -120,6 +120,7 @@ HEADERS += pdbs/canonical_pdbs_heuristic.h \
            pdbs/zero_one_pdbs_heuristic.h \
 
 HEADERS += xuy/state_order_tagger.h \
+           xuy/logistic_learner.h \
            callback.h \
            
 
