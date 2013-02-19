@@ -12,8 +12,10 @@ using namespace __gnu_cxx;
 
 typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
 
-SearchNode::SearchNode(state_var_t *state_buffer_, SearchNodeInfo &info_, OperatorCost cost_type_)
-    : state_buffer(state_buffer_), info(info_), cost_type(cost_type_) {
+SearchNode::SearchNode(state_var_t *state_buffer_, SearchNodeInfo &info_,
+    OperatorCost cost_type_, SearchNodeOpenCallback* open_callback)
+  : state_buffer(state_buffer_), info(info_), 
+    cost_type(cost_type_), open_callback_(open_callback) {
 }
 
 State SearchNode::get_state() const {
@@ -84,9 +86,8 @@ void SearchNode::open(int h, const SearchNode &parent_node,
     info.parent_state = parent_node.state_buffer;
     info.creating_operator = parent_op;
     cout << "SearchNode::open called on parent \n"
-         << "my h: " << h << "  parent h " << parent_node.info.h << endl;
-    // TODO(xuy): 1. Learn the delta h here via callback.
-    //            2. Encode the transitions to a feature vector.
+         << "Delta h: " <<  h - parent_node.info.h << endl;
+    open_callback_->operator()(h - parent_node.info.h, parent_op);
 }
 
 void SearchNode::reopen(const SearchNode &parent_node,
@@ -184,7 +185,9 @@ SearchNode SearchSpace::get_node(const State &state) {
     for (auto node_callback : get_node_callbacks) {
         node_callback->operator()(iter->first, &iter->second);
     }
-    return SearchNode(iter->first.state_data, iter->second, cost_type);
+    // Initialize a search node with open callback.
+    return SearchNode(iter->first.state_data, iter->second, 
+                      cost_type, open_node_callback_);
 }
 
 void SearchSpace::trace_path(const State &goal_state,
@@ -240,7 +243,11 @@ void SearchSpace::add_new_node_callback(SearchSpaceCallback* callback) {
   new_node_callbacks.push_back(callback);
 }
 
-void SearchSpace::add_node_callback(SearchSpaceCallback* callback) {
+void SearchSpace::add_get_node_callback(SearchSpaceCallback* callback) {
   get_node_callbacks.push_back(callback);
+}
+
+void SearchSpace::set_open_node_callback(SearchNodeOpenCallback* callback) {
+  open_node_callback_ = callback;
 }
 

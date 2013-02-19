@@ -28,7 +28,6 @@ HEADERS = \
           g_evaluator.h \
           globals.h \
           heuristic.h \
-          info_node.h \
           ipc_max_heuristic.h \
           iterated_search.h \
           lazy_search.h \
@@ -39,6 +38,7 @@ HEADERS = \
           pref_evaluator.h \
           relaxation_heuristic.h \
           rng.h \
+          search_callback.h \
           search_engine.h \
           search_node_info.h \
           search_progress.h \
