@@ -21,8 +21,9 @@ void DomainTransitionGraph::read_all(istream &in) {
     }
 
     // Second step: Read transitions from file.
-    for (int var = 0; var < var_count; var++)
+    for (int var = 0; var < var_count; var++) {
         g_transition_graphs[var]->read_data(in);
+    }
 
     // Third step: Simplify transitions.
     // Don't do this for ADL domains, because the algorithm is exponential
@@ -69,12 +70,13 @@ void DomainTransitionGraph::read_data(istream &in) {
             in >> operator_index;
 
             pair<int, int> arc = make_pair(origin, target);
-            if (local_transition_index.count(arc) == 0) {
-                local_transition_index[arc] = nodes[origin].transitions.size();
-                nodes[origin].transitions.push_back(ValueTransition(&nodes[target]));
+            // Do not encode the identify transition.
+            if ((origin != target) && local_transition_index.count(arc) == 0) {
+              local_transition_index[arc] = nodes[origin].transitions.size();
+              nodes[origin].transitions.push_back(ValueTransition(&nodes[target]));
             }
-            if (transition_index.count(arc) == 0) {
-                transition_index[arc] = transition_index.size();
+            if ((origin != target) && transition_index.count(arc) == 0) {
+              transition_index[arc] = transition_index.size();
             }
 
             assert(local_transition_index.count(arc));
@@ -188,8 +190,8 @@ void DomainTransitionGraph::get_successors(int value, vector<int> &result) const
 
 int DomainTransitionGraph::get_transition_index(int origin, int target) const {
     pair<int, int> arc = make_pair(origin, target);
-    if (!transition_index.count(arc)) {
-        return transition_index.find(arc)->second;
+    if (transition_index.count(arc)) {
+      return transition_index.find(arc)->second;
     }
     return -1;
 }

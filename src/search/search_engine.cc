@@ -23,10 +23,12 @@ SearchEngine::SearchEngine(const Options &opts)
 
     // Note: allocate extractor on stack will cause it to be destructed by the end of
     // this method. Allocate it on heap instead.
+    /* -- turned off for now to make output terse.
     StateOrderTagger* tagger = new StateOrderTagger();
     SearchSpaceCallback* tagger_function = new SearchSpaceClosure<StateOrderTagger>(
         tagger, &StateOrderTagger::tag_state);
     search_space.add_new_node_callback(tagger_function);
+    */
     
     // Logistic Learner.
     LogisticLearner* learner = new LogisticLearner();
@@ -74,7 +76,8 @@ bool SearchEngine::check_goal_and_set_plan(const State &state) {
         StateOrderTagger tagger;
 
         // Post search extraction if needed.
-        tagger.DumpTags(search_space);
+        // commented out by Eric to avoiding printing them all the time.
+        // tagger.DumpTags(search_space);
         return true;
     }
     return false;
