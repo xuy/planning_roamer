@@ -24,13 +24,15 @@ SearchEngine::SearchEngine(const Options &opts)
     // Note: allocate extractor on stack will cause it to be destructed by the end of
     // this method. Allocate it on heap instead.
     /* -- turned off for now to make output terse.
+    // TODO(xuy): figure out the Option mechanism used in FD so I can pass in parameters
+    // to decide whether a callback function is needed.
     StateOrderTagger* tagger = new StateOrderTagger();
     SearchSpaceCallback* tagger_function = new SearchSpaceClosure<StateOrderTagger>(
         tagger, &StateOrderTagger::tag_state);
     search_space.add_new_node_callback(tagger_function);
     */
     
-    // Logistic Learner.
+    // Inject a learner to the search process.
     LogisticLearner* learner = new LogisticLearner();
     SearchNodeOpenCallback* learner_function =
         new SearchNodeOpenClosure<LogisticLearner>(

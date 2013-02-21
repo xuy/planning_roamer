@@ -31,9 +31,6 @@ void  LogisticLearner::learn(SearchNodeInfo* info, int parent_h) {
             << ")" << endl;
       }
     }
-    // opeartor -> pre_post would give me the pre and post
-    // if pre == -1 handle it specially.
-    // get the transitions out first.
-    // TODO(xuy): do something useful here based on state encoding etc.
-    // useful data: info->h, info->parent_state and info->creating_operator
+    // TODO(xuy): figure out how to learn from categorical features
+    // and numerical values. Likely to be logistic or neural network.
 }
