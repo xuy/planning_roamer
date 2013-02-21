@@ -1,11 +1,13 @@
 #include "search_space.h"
-#include "state.h"
-#include "operator.h"
 
 #include <cassert>
 #include <ext/hash_map>
-#include "state_proxy.h"
+
+#include "common_types.h"
+#include "operator.h"
 #include "search_node_info.h"
+#include "state.h"
+#include "state_proxy.h"
 
 using namespace std;
 using namespace __gnu_cxx;
@@ -85,9 +87,9 @@ void SearchNode::open(int h, const SearchNode &parent_node,
     info.h = h;
     info.parent_state = parent_node.state_buffer;
     info.creating_operator = parent_op;
-    cout << "SearchNode::open called on parent \n"
-         << "Delta h: " <<  h - parent_node.info.h << endl;
-    open_callback_->operator()(h - parent_node.info.h, parent_op);
+    // All the machine learning magic happens here.
+    cout << "Delta h outside is " << info.h - parent_node.info.h << endl;
+    open_callback_->operator()(&info, parent_node.info.h);
 }
 
 void SearchNode::reopen(const SearchNode &parent_node,

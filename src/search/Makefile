@@ -38,7 +38,6 @@ HEADERS = \
           pref_evaluator.h \
           relaxation_heuristic.h \
           rng.h \
-          search_callback.h \
           search_engine.h \
           search_node_info.h \
           search_progress.h \
@@ -119,10 +118,11 @@ HEADERS += pdbs/canonical_pdbs_heuristic.h \
            pdbs/util.h \
            pdbs/zero_one_pdbs_heuristic.h \
 
-HEADERS += xuy/state_order_tagger.h \
+HEADERS += callback.h \
+           common_types.h \
+           search_callback.h \
            xuy/logistic_learner.h \
-           callback.h \
-           
+           xuy/state_order_tagger.h \
 
 SHELL = /bin/bash
 

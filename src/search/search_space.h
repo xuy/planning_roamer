@@ -18,12 +18,9 @@ class State;
 // A handy type used for SearchSpace callbacks.
 typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
 
-// TODO(xuy): Split the callback functions into two types:
-//      1. SearchSpace callback on the creation of new nodes (get_node). [done]
-//      2. SearchNode callback on the opening of the node (open).
-//
-// Stored in SearchSpace, contains everything related to search. SearchSpace is a
-// collection of SearchNodes, indexed by states.
+// SearchNode is a handle for State during search. It is stored
+// in SearchSpace, and contains everything related to a node during search.
+// SearchSpace is a collection of SearchNodes, indexed by states.
 class SearchNode {
     state_var_t *state_buffer;
     SearchNodeInfo &info;

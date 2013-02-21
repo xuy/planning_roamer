@@ -1,6 +1,7 @@
 #ifndef SEARCH_CALLBACK_H
 #define SEARCH_CALLBACK_H
 
+#include "common_types.h"
 #include "operator.h"
 #include "search_node_info.h"
 #include "state_proxy.h"
@@ -54,11 +55,11 @@ class SearchSpaceClosure : public SearchSpaceCallback {
 
 // Callback that happens when you open a new node.
 class SearchNodeOpenCallback : public std::binary_function
-    <const int, const Operator*, void> {
+    <SearchNodeInfo*, int, void> {
   public:
     virtual void operator() (
-        const int delta /*unused_arg*/,
-        const Operator* parent_op /*unused_arg*/) const = 0;
+        SearchNodeInfo* info /*unused_arg*/,
+        int  delta_h /*unused_arg*/) const = 0;
     
     virtual ~SearchNodeOpenCallback() {}
 };
@@ -66,14 +67,14 @@ class SearchNodeOpenCallback : public std::binary_function
 template <typename Class>
 class SearchNodeOpenClosure : public SearchNodeOpenCallback {
  public:
-  typedef void (Class::*MethodType)(const int delta, const Operator* parent_op);
+  typedef void (Class::*MethodType)(SearchNodeInfo* info, int delta_h);
 
   SearchNodeOpenClosure(Class* object, MethodType method)
     : object_(object), method_(method) {}
 
   virtual ~SearchNodeOpenClosure() {}
 
-  virtual void operator() (const int arg1, const Operator* arg2) const { 
+  virtual void operator() (SearchNodeInfo* arg1, int arg2) const { 
     (object_->*method_)(arg1, arg2);
   }
 
