@@ -21,23 +21,33 @@ SearchEngine::SearchEngine(const Options &opts)
     }
     bound = opts.get<int>("bound");
 
-    // Note: allocate extractor on stack will cause it to be destructed by the end of
-    // this method. Allocate it on heap instead.
-    /* -- turned off for now to make output terse.
-    // TODO(xuy): figure out the Option mechanism used in FD so I can pass in parameters
-    // to decide whether a callback function is needed.
-    StateOrderTagger* tagger = new StateOrderTagger();
-    SearchSpaceCallback* tagger_function = new SearchSpaceClosure<StateOrderTagger>(
-        tagger, &StateOrderTagger::tag_state);
-    search_space.add_new_node_callback(tagger_function);
-    */
-    
-    // Inject a learner to the search process.
-    LogisticLearner* learner = new LogisticLearner();
-    SearchNodeOpenCallback* learner_function =
-        new SearchNodeOpenClosure<LogisticLearner>(
-            learner, &LogisticLearner::learn);
-    search_space.set_open_node_callback(learner_function);
+    // Please note: allocate callback functions on stack will cause it to be
+    // destructed when it is out of scope.
+    // Allocate them on the heap (use new) instead.
+
+    // Inject various callback functions according to options.
+    for (auto& callback : opts.get_list<string>("new_cb")) {
+      if (callback == "order_tagger") {
+        cout << "[Injection] Activate State Order Tagger." << endl;
+        StateOrderTagger* tagger = new StateOrderTagger();
+        SearchSpaceCallback* tagger_function =
+            new SearchSpaceClosure<StateOrderTagger>(
+                tagger, &StateOrderTagger::tag_state);
+        search_space.add_new_node_callback(tagger_function);
+      }
+    }
+
+    // TODO(xuy): see how to fit learner into the heuristic framework.
+    for (auto& callback : opts.get_list<string>("open_cb")) {
+      if (callback == "logistic") {
+        cout << "[Injection] Activate Logistic Learner." << endl;
+        LogisticLearner* learner = new LogisticLearner();
+        SearchNodeOpenCallback* learner_function =
+            new SearchNodeOpenClosure<LogisticLearner>(
+                learner, &LogisticLearner::learn);
+        search_space.set_open_node_callback(learner_function);
+      }
+    }
 }
 
 SearchEngine::~SearchEngine() {
@@ -106,4 +116,9 @@ void SearchEngine::add_options_to_parser(OptionParser &parser) {
     parser.add_option<int>("bound",
                            numeric_limits<int>::max(),
                            "bound on plan cost");
+    vector<string> default_value;
+    parser.add_list_option<string>(
+        "new_cb", default_value, "callbacks when new node is created");
+    parser.add_list_option<string>(
+        "open_cb", default_value, "callbacks when node is opened");
 }
