@@ -21,7 +21,9 @@ def RunRoamer(directory, domain_file, problem_file):
   print "Call roamer to solve ", directory, domain_file, problem_file
   template = '../src/plan-terse ../benchmarks/%s/%s ../benchmarks/%s/%s ' +\
             '--heuristic "hff=ff()" --heuristic "lm=cea()" ' +\
-            '--search "lazy_greedy([hff,lm], preferred=[hff,lm])"'
+            '--search "lazy_greedy([hff,lm], preferred=[hff,lm], ' +\
+            ' open_cb=[logistic], new_cb=[order_tagger])"'
+            # callback functions, subject to change
   command = template % (directory, domain_file, directory, problem_file)
   os.system(command)
 
@@ -31,9 +33,10 @@ if __name__ == '__main__':
   directory = benchmarks[domain_name]['directory']
   domain_files = benchmarks[domain_name]['domain']
   if isinstance(domain_files, str):
+    # one domain file per domain
     domain_file = benchmarks[domain_name]['domain']
-  else: # some benchmarks has one domain file per problem.
+  else: # one domain file per problem, saved as a list
     domain_file = benchmarks[domain_name]['domain'][index]
   problem_file = benchmarks[domain_name]['problems'][index]
   RunRoamer(directory, domain_file, problem_file)
-#os.sys("../src/plan-debug ../benchmarks/airport-adl/domain.pddl ../benchmarks/airport-adl/p19-airport3-p6.pddl --heuristic "hff=ff()" --heuristic "lm=cea()" --search "lazy_greedy([hff,lm], preferred=[hff,lm])"
+  #os.sys("../src/plan-debug ../benchmarks/airport-adl/domain.pddl ../benchmarks/airport-adl/p19-airport3-p6.pddl --heuristic "hff=ff()" --heuristic "lm=cea()" --search "lazy_greedy([hff,lm], preferred=[hff,lm])"

@@ -1,5 +1,6 @@
 #! /bin/bash
-
+# Forked from plan-debug, commented out all echo statements
+# so the output is cleaner. This is called by scripts under ../xuy-scripts for running experients.
 set -e
 
 BASEDIR="$(dirname "$0")"

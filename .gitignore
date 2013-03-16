@@ -5,6 +5,7 @@
 elapsed.time
 output
 output.sas
+sas_plan
 plan_numbers_and_cost
 src/preprocess/preprocess
 src/search/downward-2-debug
