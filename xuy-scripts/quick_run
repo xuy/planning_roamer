@@ -1,4 +1,5 @@
 #!/bin/sh
-cp /home/ubuntu/problems.py ./Problems.py
+cd ../src/make-debug.sh
+# cp /home/ubuntu/problems.py ./Problems.py
 python ./_quick_run.py $1 $2
 ./cleanup

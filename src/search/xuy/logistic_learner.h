@@ -18,6 +18,10 @@ class LogisticLearner {
     // that represents the current state/node during search, and the heuristic
     // function value of its parent.
     void learn(SearchNodeInfo* info, int parent_h);
+
+  private:
+    void PrintDebugInfo(int var, int origin, int target);
+
 };
 
 #endif  //  XUY_LOGISTIC_LEARNER_H

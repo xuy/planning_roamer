@@ -12,8 +12,17 @@ LogisticLearner::LogisticLearner() {
 LogisticLearner::~LogisticLearner() {
 }
 
+void LogisticLearner::PrintDebugInfo(int var, int origin, int target) {
+  if (origin != target) {
+    cout<< var << "(" << g_variable_domain[var] << ") : "
+        << origin << " -> " << target << " (# "
+        << g_transition_graphs[var]->get_transition_index(origin, target)
+        << ")" << endl;
+  }
+}
+
 // The actual method that extracts the first state variable from the state variable.
-void  LogisticLearner::learn(SearchNodeInfo* info, int parent_h) {
+void LogisticLearner::learn(SearchNodeInfo* info, int parent_h) {
     int var, origin, target;
     cout << "[Logistic Learner] Delta h is " << info->h - parent_h << endl;
     for (auto& transition : info->creating_operator->get_pre_post()) {
@@ -24,13 +33,9 @@ void  LogisticLearner::learn(SearchNodeInfo* info, int parent_h) {
         origin = info->parent_state[var];
       }
       target = transition.post;
-      if (origin != target) {
-        cout<< var << "(" << g_variable_domain[var] << ") : "
-            << origin << " -> " << target << " (# "
-            << g_transition_graphs[var]->get_transition_index(origin, target)
-            << ")" << endl;
-      }
+      PrintDebugInfo(var, origin, target);
+      // TODO(xuy): online training for linear regression. See the Simple Note
+      //  for the linear regression formulation.
     }
-    // TODO(xuy): figure out how to learn from categorical features
-    // and numerical values. Likely to be logistic or neural network.
+    // TODO(xuy): stratify the transition space using stratified planning.
 }
