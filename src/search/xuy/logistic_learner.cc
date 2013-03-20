@@ -6,9 +6,7 @@
 #include "../domain_transition_graph.h"
 #include "../search_space.h"
 
-// TODO(xu): a general logging framework instead of cout.
-// Sets the offsets for each DTG, and assigns the initial weights
-// for each one hot assignment.
+// TODO(xuy): stratify the transition space using stratified planning.
 LogisticLearner::LogisticLearner() {
   int offset = 0;
   for (int var = 0; var < g_variable_domain.size(); ++var) {
@@ -33,6 +31,9 @@ LogisticLearner::LogisticLearner() {
 LogisticLearner::~LogisticLearner() {
 }
 
+// TODO(xu): a general logging framework instead of cout.
+// Sets the offsets for each DTG, and assigns the initial weights
+// for each one hot assignment.
 void LogisticLearner::PrintDebugInfo(int var, int origin, int target) {
   cout<< var << "(" << g_variable_domain[var] << ") : "
       << origin << " -> " << target << " (# "
@@ -78,15 +79,14 @@ void LogisticLearner::learn(SearchNodeInfo* info, int parent_h) {
     get_variable_offsets(info, &one_hot_indices);
     double prediction = predict(one_hot_indices);
     cout << "Prediction is " << prediction << endl;
-    // TODO(xuy):
-    // gradient: 2 * x_i * (delta_h - beta - prediction)
-    //  PrintDebugInfo(var, origin, target);
+    // TODO(xuy): gradient: 2 * x_i * (delta_h - beta - prediction)
+
     /*
+    PrintDebugInfo(var, origin, target);
     cout << "[Logistic Learner] transiton encoding -> ";
     for (auto& code : encoding) {
       cout << code << " ";
     }
     cout << endl;
     */
-    // TODO(xuy): stratify the transition space using stratified planning.
 }
