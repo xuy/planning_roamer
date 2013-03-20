@@ -22,15 +22,19 @@ class LogisticLearner {
 
   private:
 
-    vector<double> weight;
+    vector<double> weight_;
 
-    vector<int> one_hot_offset;
+    vector<int> one_hot_offset_;
 
     void PrintDebugInfo(int var, int origin, int target);
 
+    void get_variable_offsets(const SearchNodeInfo* info , map<int, int>* variable_offsets);
+
     void stochastic_gradient_descent(int var, int origin, int target);
 
-    double predict(SearchNodeInfo* info, map<int, int>* variable_offsets);
+    double predict(const map<int, int>& variable_offsets);
+
+
 };
 
 #endif  //  XUY_LOGISTIC_LEARNER_H

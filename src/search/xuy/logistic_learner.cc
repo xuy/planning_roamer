@@ -1,19 +1,31 @@
 #include "logistic_learner.h"
 
 #include <algorithm>
+#include <random>
 
 #include "../domain_transition_graph.h"
 #include "../search_space.h"
 
-// Order each state.
+// TODO(xu): a general logging framework instead of cout.
+// Sets the offsets for each DTG, and assigns the initial weights
+// for each one hot assignment.
 LogisticLearner::LogisticLearner() {
   int offset = 0;
   for (int var = 0; var < g_variable_domain.size(); ++var) {
     int transition_count = g_transition_graphs[var]->get_transition_count();
     cout << "[Logistic Learner] Init the transition count on variable "
          << var << " is : " << transition_count << endl;
-    one_hot_offset.push_back(offset);
+    one_hot_offset_.push_back(offset);
     offset += transition_count;
+  }
+  // Assign random weight (-1,1).
+  assert(offset > 0);
+  weight_.resize(offset);
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> dis(-1, 1);
+  for (int index = 0; index < weight_.size(); ++index) {
+    weight_[index] = dis(gen);
   }
   cout << "Done with Logistic Learning Initialization" << endl;
 }
@@ -35,48 +47,46 @@ void LogisticLearner::stochastic_gradient_descent(int var, int origin, int targe
   cout << "Stochastic Gradient";
 }
 
-// probably also cache a map from variable to offset index etc.
-double LogisticLearner::predict(SearchNodeInfo* info,
-                                map<int, int>* variable_offsets) {
-  double prediction = 0.0;
-  int var, origin, target, weight_index;
+// Get the variable offset for each transition appeared in the operator
+// that leads to the search node. This function is used by predict
+// and gradient descent.
+void LogisticLearner::get_variable_offsets(
+    const SearchNodeInfo* info , map<int, int>* variable_offsets) {
+  int var, origin;
   for (auto& transition : info->creating_operator->get_pre_post()) {
     var = transition.var;
     origin = (transition.pre == -1 ? info->parent_state[var]: transition.pre);
-    target = transition.post; 
-    weight_index = one_hot_offset[var] + 
-      g_transition_graphs[var]->get_transition_index(origin, target);
-    (*variable_offsets)[var] = weight_index;
-    prediction += weight[weight_index]; // defult x_i is 1 because we use one hot encoding.
+    (*variable_offsets)[var] = one_hot_offset_[var] +
+        g_transition_graphs[var]->get_transition_index(origin, transition.post);
+  }
+}
+
+// probably also cache a map from variable to offset index etc.
+double LogisticLearner::predict(const map<int, int>& weight_indices) {
+  double prediction = 0.0;
+  for (auto& var_index_pair : weight_indices) {
+    prediction += weight_.at(var_index_pair.second);
+    // It is actually prediction += weight_i * x_i. Here x_i = 1.
   }
   return prediction;
 }
 
 // The actual method that extracts the first state variable from the state variable.
 void LogisticLearner::learn(SearchNodeInfo* info, int parent_h) {
-    int var, origin, target;
     cout << "[Logistic Learner] Delta h is " << info->h - parent_h << endl;
-    vector<int> encoding;
-    for (auto& transition : info->creating_operator->get_pre_post()) {
-      var = transition.var;
-      origin = transition.pre;
-      // -1 means no fixed precondition, we ground origin to current state.
-      if (origin == -1) {
-        origin = info->parent_state[var];
-      }
-      target = transition.post;
-      // TODO(xuy): skip the actual encoding, focus on calculating the 
-      // gradient for weights directly.
-      // target position = offset[var] + transition_index(origin, target) 
-      // gradient: 2 * x_i * (delta_h - beta - prediction)
-      // prediction using the predict() function provided.
-      encoding.push_back(g_transition_graphs[var]->get_transition_index(origin, target));
-      //  PrintDebugInfo(var, origin, target);
-    }
+    map<int, int> one_hot_indices;
+    get_variable_offsets(info, &one_hot_indices);
+    double prediction = predict(one_hot_indices);
+    cout << "Prediction is " << prediction << endl;
+    // TODO(xuy):
+    // gradient: 2 * x_i * (delta_h - beta - prediction)
+    //  PrintDebugInfo(var, origin, target);
+    /*
     cout << "[Logistic Learner] transiton encoding -> ";
     for (auto& code : encoding) {
       cout << code << " ";
     }
     cout << endl;
+    */
     // TODO(xuy): stratify the transition space using stratified planning.
 }
