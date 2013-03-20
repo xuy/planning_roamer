@@ -196,6 +196,9 @@ int DomainTransitionGraph::get_transition_index(int origin, int target) const {
     return -1;
 }
 
+int DomainTransitionGraph::get_transition_count() const {
+    return transition_index.size();
+}
 
 // Encode all nop transitions as one integeter.
 void DomainTransitionGraph::add_nop_transtion_indices() {

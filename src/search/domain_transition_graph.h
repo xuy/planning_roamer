@@ -114,6 +114,9 @@ public:
     // Returns a unique encoding for the transition.
     int get_transition_index(int source, int target) const;
 
+    // Returns the total number of possible transitions in a transition graph.
+    int get_transition_count() const;
+
     void add_nop_transtion_indices();
 
     static void read_all(istream &in);

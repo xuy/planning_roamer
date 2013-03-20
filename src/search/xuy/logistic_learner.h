@@ -1,6 +1,7 @@
 #ifndef XUY_LOGISTIC_LEARNER_H
 #define XUY_LOGISTIC_LEARNER_H
 
+#include <map>
 #include <utility>
 
 #include "../common_types.h"
@@ -20,8 +21,16 @@ class LogisticLearner {
     void learn(SearchNodeInfo* info, int parent_h);
 
   private:
+
+    vector<double> weight;
+
+    vector<int> one_hot_offset;
+
     void PrintDebugInfo(int var, int origin, int target);
 
+    void stochastic_gradient_descent(int var, int origin, int target);
+
+    double predict(SearchNodeInfo* info, map<int, int>* variable_offsets);
 };
 
 #endif  //  XUY_LOGISTIC_LEARNER_H
