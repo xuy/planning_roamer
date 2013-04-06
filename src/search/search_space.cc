@@ -87,8 +87,8 @@ void SearchNode::open(int h, const SearchNode &parent_node,
     info.h = h;
     info.parent_state = parent_node.state_buffer;
     info.creating_operator = parent_op;
-    // All the machine learning magic happens here.
-    cout << "Delta h outside is " << info.h - parent_node.info.h << endl;
+    // Invoke callback functions that is applicable to node open.
+    // Most of the machine learning magic happens in this callback function.
     open_callback_->operator()(&info, parent_node.info.h);
 }
 

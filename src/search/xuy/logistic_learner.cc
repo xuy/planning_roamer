@@ -25,6 +25,10 @@ LogisticLearner::LogisticLearner() {
   for (int index = 0; index < weight_.size(); ++index) {
     weight_[index] = dis(gen);
   }
+
+  // Assign default learning parameters.
+  learning_rate_ = 0.9;
+  beta_ = 0.5;
   cout << "Done with Logistic Learning Initialization" << endl;
 }
 
@@ -48,6 +52,19 @@ void LogisticLearner::stochastic_gradient_descent(int var, int origin, int targe
   cout << "Stochastic Gradient";
 }
 
+// Gradient: 2 * x_i * (delta_h - beta - prediction). 
+void  LogisticLearner::gradient_descent(
+    const map<int, int>& weight_indices, double error) {
+  cout << "[Logsitic Learner] Adjust weights for error " << error << endl;
+  // weight should not move too much. Each should move a little. This little
+  // is controlled by how many elements we need to move, and how large the
+  // error is.
+  double adjusted_move = error / weight_indices.size();
+  for (auto& var_index_pair : weight_indices) {
+    weight_[var_index_pair.second] -= learning_rate_ * adjusted_move;
+  }
+}
+
 // Get the variable offset for each transition appeared in the operator
 // that leads to the search node. This function is used by predict
 // and gradient descent.
@@ -64,23 +81,25 @@ void LogisticLearner::get_variable_offsets(
 
 // probably also cache a map from variable to offset index etc.
 double LogisticLearner::predict(const map<int, int>& weight_indices) {
-  double prediction = 0.0;
+  double weighted_sum = 0.0;
   for (auto& var_index_pair : weight_indices) {
-    prediction += weight_.at(var_index_pair.second);
-    // It is actually prediction += weight_i * x_i. Here x_i = 1.
+    // Actually: weighted_sum += weight_i * x_i. Here x_i = 1 because we use
+    // compressed one_hot encoding (only record 1s).
+    weighted_sum += weight_.at(var_index_pair.second);
   }
-  return prediction;
+  return weighted_sum + beta_;
 }
 
 // The actual method that extracts the first state variable from the state variable.
 void LogisticLearner::learn(SearchNodeInfo* info, int parent_h) {
-    cout << "[Logistic Learner] Delta h is " << info->h - parent_h << endl;
+    double delta_h = info->h - parent_h;
     map<int, int> one_hot_indices;
     get_variable_offsets(info, &one_hot_indices);
     double prediction = predict(one_hot_indices);
-    cout << "Prediction is " << prediction << endl;
-    // TODO(xuy): gradient: 2 * x_i * (delta_h - beta - prediction)
-
+    cout << "[Logistic Learner] Actual delta_h is " << delta_h
+         << " Prediction is " << prediction << endl;
+    double error = prediction - delta_h;
+    gradient_descent(one_hot_indices, error);
     /*
     PrintDebugInfo(var, origin, target);
     cout << "[Logistic Learner] transiton encoding -> ";
