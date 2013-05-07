@@ -25,11 +25,11 @@ class SearchNode {
     state_var_t *state_buffer;
     SearchNodeInfo &info;
     OperatorCost cost_type;
-    vector<SearchNodeOpenCallback*> open_callbacks_;
+    SearchNodeOpenCallback* open_callback_;
     
 public:
     SearchNode(state_var_t *state_buffer_, SearchNodeInfo &info_, 
-        OperatorCost cost_type_, const vector<SearchNodeOpenCallback*>& open_callbacks);
+        OperatorCost cost_type_, SearchNodeOpenCallback* open_callback_);
 
     state_var_t *get_state_buffer() {
         return state_buffer;
@@ -72,15 +72,15 @@ class SearchSpace {
     OperatorCost cost_type;
     // A list of callback functions that will be invoked whenever "get_node"
     // is called.
-    vector<SearchSpaceCallback*> get_node_callbacks_;
+    vector<SearchSpaceCallback*> get_node_callbacks;
 
     // A list of callback functions that will be invoked whenever "get_node"
     // is called AND a new node is generated (never seen it before).
-    vector<SearchSpaceCallback*> new_node_callbacks_;
+    vector<SearchSpaceCallback*> new_node_callbacks;
     
-    // A list of  callback functions that will be invoked whenever "SearchNode::open"
+    // A callback functions that will be invoked whenever "SearchNode::open"
     // is called on a (node, op) pair.
-    vector<SearchNodeOpenCallback*> open_node_callbacks_;
+    SearchNodeOpenCallback* open_node_callback_;
 
 public:
     SearchSpace(OperatorCost cost_type_);
@@ -99,7 +99,7 @@ public:
     void process_nodes(const SearchSpaceCallback* callback);
     void add_get_node_callback(SearchSpaceCallback* callback);
     void add_new_node_callback(SearchSpaceCallback* callback);
-    void add_open_node_callback(SearchNodeOpenCallback* callback);
+    void set_open_node_callback(SearchNodeOpenCallback* callback);
 };
 
 #endif
