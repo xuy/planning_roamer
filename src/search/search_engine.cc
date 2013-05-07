@@ -45,7 +45,7 @@ SearchEngine::SearchEngine(const Options &opts)
         SearchNodeOpenCallback* learner_function =
             new SearchNodeOpenClosure<LogisticLearner>(
                 learner, &LogisticLearner::learn);
-        search_space.set_open_node_callback(learner_function);
+        search_space.add_open_node_callback(learner_function);
       }
     }
 }

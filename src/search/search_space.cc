@@ -15,9 +15,9 @@ using namespace __gnu_cxx;
 typedef std::pair<const StateProxy, SearchNodeInfo> InfoNode;
 
 SearchNode::SearchNode(state_var_t *state_buffer_, SearchNodeInfo &info_,
-    OperatorCost cost_type_, SearchNodeOpenCallback* open_callback)
+    OperatorCost cost_type_, const vector<SearchNodeOpenCallback*>& open_callbacks)
   : state_buffer(state_buffer_), info(info_), 
-    cost_type(cost_type_), open_callback_(open_callback) {
+    cost_type(cost_type_), open_callbacks_(open_callbacks) {
 }
 
 State SearchNode::get_state() const {
@@ -87,9 +87,11 @@ void SearchNode::open(int h, const SearchNode &parent_node,
     info.h = h;
     info.parent_state = parent_node.state_buffer;
     info.creating_operator = parent_op;
-    // Invoke callback functions that is applicable to node open.
-    // Most of the machine learning magic happens in this callback function.
-    open_callback_->operator()(&info, parent_node.info.h);
+    // Invoke callback functions that are applicable to node open.
+    // Most of the machine learning magic happens in callback functions.
+    for (auto callback : open_callbacks_) {
+        callback->operator()(&info, parent_node.info.h);
+    }
 }
 
 void SearchNode::reopen(const SearchNode &parent_node,
@@ -179,17 +181,17 @@ SearchNode SearchSpace::get_node(const State &state) {
         // This is a new entry: Must give the state permanent lifetime.
         result.first->first.make_permanent();
         // Invoke callback functions that is applied to only new nodes.
-        for (auto node_callback : new_node_callbacks) {
+        for (auto node_callback : new_node_callbacks_) {
     	    node_callback->operator()(iter->first, &iter->second);
         }
     }
     // Invoke callback functions that is applied to all get_node calls.
-    for (auto node_callback : get_node_callbacks) {
+    for (auto node_callback : get_node_callbacks_) {
         node_callback->operator()(iter->first, &iter->second);
     }
     // Initialize a search node with open callback.
     return SearchNode(iter->first.state_data, iter->second, 
-                      cost_type, open_node_callback_);
+                      cost_type, open_node_callbacks_);
 }
 
 void SearchSpace::trace_path(const State &goal_state,
@@ -242,14 +244,14 @@ void SearchSpace::process_nodes(const SearchSpaceCallback* callback) {
 }
 
 void SearchSpace::add_new_node_callback(SearchSpaceCallback* callback) {
-  new_node_callbacks.push_back(callback);
+  new_node_callbacks_.push_back(callback);
 }
 
 void SearchSpace::add_get_node_callback(SearchSpaceCallback* callback) {
-  get_node_callbacks.push_back(callback);
+  get_node_callbacks_.push_back(callback);
 }
 
-void SearchSpace::set_open_node_callback(SearchNodeOpenCallback* callback) {
-  open_node_callback_ = callback;
+void SearchSpace::add_open_node_callback(SearchNodeOpenCallback* callback) {
+  open_node_callbacks_.push_back(callback);
 }
 
