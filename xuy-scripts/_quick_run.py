@@ -4,8 +4,12 @@ import os
 
 from Problems import problems as benchmarks
 
-# Allows users to use unique prefix to denote domains.
-# e.g. air can be used to represent airport domain.
+# This handy script allows users to use unique prefix to denote domains,
+# instead of typing out the fullname of the domain. Also, it uses
+# domain/problem definitions in Problems.py to locate the correct pddl files
+# for the specified domain and problem.
+
+# Given a domain name prefix, maps it to an unique domain.
 def FindDomain(name):
   possible_domain = []
   for domain_name in benchmarks:
@@ -16,6 +20,14 @@ def FindDomain(name):
   else:
     print "Possible domains are ",  possible_domain
     sys.exit(-1)
+
+# A fancy way to issue command line calls such as
+# ../src/plan-debug \
+# ../benchmarks/airport-adl/domain.pddl \
+# ../benchmarks/airport-adl/p19-airport3-p6.pddl \
+# --heuristic "hff=ff()"
+# --heuristic "lm=cea()"
+# --search "lazy_greedy([hff,lm], preferred=[hff,lm])"
 
 def RunRoamer(directory, domain_file, problem_file):
   print "Call roamer to solve ", directory, domain_file, problem_file
@@ -39,4 +51,3 @@ if __name__ == '__main__':
     domain_file = benchmarks[domain_name]['domain'][index]
   problem_file = benchmarks[domain_name]['problems'][index]
   RunRoamer(directory, domain_file, problem_file)
-  #os.sys("../src/plan-debug ../benchmarks/airport-adl/domain.pddl ../benchmarks/airport-adl/p19-airport3-p6.pddl --heuristic "hff=ff()" --heuristic "lm=cea()" --search "lazy_greedy([hff,lm], preferred=[hff,lm])"
