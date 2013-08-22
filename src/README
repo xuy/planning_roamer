@@ -1,11 +1,5 @@
-Scripts here are for debuging purposes. To run benchmark problems,
-try
+Scripts here are for debuging purposes, you probably don't need to use them directly.
 
-  > quick_run.py
+To solve benchmark problems, try
 
-under xuy-scripts.
-
-Some todo items
-
-
-truck 1 has an allocation bug, need to fix it if other problems have it too.
+ > qr truck 1
