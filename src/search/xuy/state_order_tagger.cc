@@ -13,7 +13,7 @@ StateOrderTagger::~StateOrderTagger() {
     //data.close();
 }
 
-// The actual method that extracts the first state variable from the state variable.
+// Tag the search node as it is created by search engine.
 void StateOrderTagger::tag_state(const StateProxy&, SearchNodeInfo* info) {
     order++;
     info->order = order;

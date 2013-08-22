@@ -24,7 +24,6 @@ SearchEngine::SearchEngine(const Options &opts)
     // Please note: allocate callback functions on stack will cause it to be
     // destructed when it is out of scope.
     // Allocate them on the heap (use new) instead.
-
     // Inject various callback functions according to options.
     for (auto& callback : opts.get_list<string>("new_cb")) {
       if (callback == "order_tagger") {
@@ -38,6 +37,8 @@ SearchEngine::SearchEngine(const Options &opts)
     }
 
     // TODO(xuy): see how to fit learner into the heuristic framework.
+    // Allocate a fixed array of callbacks. Cannot use STL vector because
+    // callback functions are not copy safe.
     for (auto& callback : opts.get_list<string>("open_cb")) {
       if (callback == "logistic") {
         cout << "[Injection] Activate Logistic Learner." << endl;
@@ -45,7 +46,7 @@ SearchEngine::SearchEngine(const Options &opts)
         SearchNodeOpenCallback* learner_function =
             new SearchNodeOpenClosure<LogisticLearner>(
                 learner, &LogisticLearner::learn);
-        search_space.set_open_node_callback(learner_function);
+        search_space.add_open_node_callback(learner_function);
       }
     }
 }
@@ -89,7 +90,7 @@ bool SearchEngine::check_goal_and_set_plan(const State &state) {
 
         // Post search extraction if needed.
         // commented out by Eric to avoiding printing them all the time.
-        // tagger.DumpTags(search_space);
+        tagger.DumpTags(search_space);
         return true;
     }
     return false;

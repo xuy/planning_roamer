@@ -1,7 +1,0 @@
-#!/bin/sh
-cd ../src
-./make-debug.sh
-cd ../xuy-scripts
-# cp /home/ubuntu/problems.py ./Problems.py
-python ./_quick_run.py $1 $2
-./cleanup

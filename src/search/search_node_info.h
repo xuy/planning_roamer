@@ -6,6 +6,7 @@
 class SearchNodeInfo {
   public:	
     // Begin Fields added by Eric to book-keep things.
+    // The order that this node is expanded during search.
     int order;
     // End Fields added by Eric to book-keep things.
 
